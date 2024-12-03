@@ -3,6 +3,7 @@ import AppMain from "../components/AppMain.vue";
 
 const routes = [
   { path: "/", component: AppMain },
+  { path: "/restaurants/:id/dishes", component: RestaurantDishes, props: true }
 ];
 
 const router = createRouter({
