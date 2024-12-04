@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  name: 'AppMain',
+  name: 'AppHeader',
 };
 </script>
 
