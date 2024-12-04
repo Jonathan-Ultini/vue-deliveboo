@@ -1,5 +1,7 @@
 <script setup>
-import AppHeaderVue from './components/AppHeader.vue'
+// Import HEADER component
+import AppHeaderVue from './components/AppHeader.vue';
+// Import NAVBAR component
 
 </script>
 
