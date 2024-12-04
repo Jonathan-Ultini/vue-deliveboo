@@ -6,6 +6,7 @@ import AppHeaderVue from './components/AppHeader.vue';
 </script>
 
 <template>
+  <!-- Header page with navbar -->
   <AppHeaderVue/>
 </template>
 
