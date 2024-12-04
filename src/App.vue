@@ -11,5 +11,7 @@ import AppHeaderVue from './components/AppHeader.vue';
 </template>
 
 <style scoped>
-
+body {
+  font-family: 'Nunito', Arial, sans-serif;
+}
 </style>

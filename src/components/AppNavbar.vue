@@ -20,22 +20,49 @@ export default {
       </div>
 
       <!-- Navbar elements -->
-      <li> <i class="fas fa-house"> </i>Home</li>
-      <li> <i class="fas fa-users"> </i>About</li>
-      <li> <i class="fas fa-envelope"> </i>Contatti</li>
-      <li> <i class="fas fa-user-pen"> </i>Registrati</li>
-      <li> <i class="fas fa-arrow-right-to-bracket"> </i>Accedi</li>
-      <li> <i class="fas fa-cart-shopping"> </i></li>
+      <li><a href="#"><i class="fas fa-house"></i> Home</a></li>
+      <li><a href="#"><i class="fas fa-users"></i> About</a></li>
+      <li><a href="#"><i class="fas fa-envelope"></i> Contatti</a></li>
+      <li><a href="#"><i class="fas fa-user-pen"></i> Registrati</a></li>
+      <li><a href="#"><i class="fas fa-arrow-right-to-bracket"></i> Accedi</a></li>
+      <li><a href="#"><i class="fas fa-cart-shopping"></i> Carrello</a></li>
 
     </ul> 
   </div>
 </template>
 
 <style scoped lang="scss">
-// Navbar Wrapper
+// Custom default yellow 
+$custom-yellow: rgb(255, 214, 58);
+
+// Navbar
 .nav-wrapper{
-  margin: 0 auto;
+  margin: 40px auto;
   max-width: 90%;
+}
+
+// Unordered List
+
+ul li {
+  list-style: none;
+}
+
+a{
+  padding: 10px 15px;
+  text-decoration: none;
+  background-color: $custom-yellow;
+  border-radius: 15px;
+
+  display: inline-block;
+  transition: transform 0.5s ease;
+}
+
+a:hover{
+  transform: scale(1.05);
+}
+
+i{
+  margin-right: 5px;
 }
 
 // Figure, img
