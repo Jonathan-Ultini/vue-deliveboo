@@ -10,6 +10,9 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
+              <router-link class="nav-link" to="/dishes">Dishes</router-link>
+            </li>
+            <li class="nav-item">
               <router-link class="nav-link" to="/login">Login</router-link>
             </li>
             <li class="nav-item">
