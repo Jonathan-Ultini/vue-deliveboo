@@ -17,12 +17,5 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !store.isAuthenticated) {
-    next('/login');
-  } else {
-    next();
-  }
-});
 
 export default router;

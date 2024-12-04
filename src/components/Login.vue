@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import store from '../store';
-
 export default {
   data() {
     return {
@@ -26,8 +24,21 @@ export default {
     };
   },
   methods: {
-    login() {
-      store.login(this.email, this.password);
+    async login() {
+      try {
+        const response = await this.$axios.post('http://127.0.0.1:8000/api/login', {
+          email: this.email,
+          password: this.password,
+        });
+
+        if (response.status === 200) {
+          // Login successful
+          this.$router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('Login failed:', error);
+        alert('Credenziali non valide.');
+      }
     },
   },
 };
