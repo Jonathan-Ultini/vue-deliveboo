@@ -1,28 +1,26 @@
 <template>
   <div class="container mt-5">
-    <h2>Gestisci Piatti</h2>
-    <!-- <div>
-      <button class="btn btn-success" @click="addDish">Aggiungi Piatto</button>
-    </div> -->
+    <h2>Lista Piatti</h2>
 
-    <table class="table mt-3">
+    <!-- Mostra un messaggio di caricamento fino a quando i piatti non sono caricati -->
+    <div v-if="loading" class="text-center">
+      <p>Caricamento...</p>
+    </div>
+
+    <!-- Mostra la lista dei piatti -->
+    <table class="table mt-3" v-else>
       <thead>
         <tr>
-          <th>Nome Piatto</th>
+          <th>Nome</th>
+          <th>Descrizione</th>
           <th>Prezzo</th>
-          <th>Visibile</th>
-          <th>Azioni</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="dish in dishes" :key="dish.id">
           <td>{{ dish.name }}</td>
-          <td>{{ dish.price }}</td>
-          <td>{{ dish.is_visible ? 'Sì' : 'No' }}</td>
-          <td>
-            <button class="btn btn-primary" @click="editDish(dish.id)">Modifica</button>
-            <button class="btn btn-danger" @click="deleteDish(dish.id)">Elimina</button>
-          </td>
+          <td>{{ dish.description }}</td>
+          <td>{{ dish.price }}€</td>
         </tr>
       </tbody>
     </table>
@@ -33,43 +31,29 @@
 export default {
   data() {
     return {
-      dishes: [],
+      dishes: [],  // Array per memorizzare i piatti
+      loading: true,  // Flag per il caricamento
     };
   },
   created() {
+    // Effettua la richiesta per ottenere i piatti quando il componente viene creato
     this.fetchDishes();
   },
   methods: {
     async fetchDishes() {
       try {
-        const response = await this.$axios.get('dishes', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        this.dishes = response.data;
+        // Effettua la richiesta GET all'API per ottenere i piatti
+        const response = await this.$axios.get('/api/dishes');
+
+        // Assegna i dati ottenuti dalla risposta alla variabile dishes
+        this.dishes = response.data.results;
       } catch (error) {
         console.error('Errore nel recuperare i piatti:', error);
+      } finally {
+        // Imposta loading a false dopo che la risposta è stata ricevuta
+        this.loading = false;
       }
     },
-    // addDish() {
-    //   this.$router.push('/add-dish'); // Reindirizza alla pagina per aggiungere un piatto
-    // },
-    // editDish(dishId) {
-    //   this.$router.push(`/edit-dish/${dishId}`); // Reindirizza alla pagina di modifica del piatto
-    // },
-    // async deleteDish(dishId) {
-    //   try {
-    //     await this.$axios.delete(`/dishes/${dishId}`, {
-    //       headers: {
-    //         Authorization: `Bearer ${localStorage.getItem('token')}`,
-    //       },
-    //     });
-    //     this.fetchDishes(); // Ricarica i piatti dopo l'eliminazione
-    //   } catch (error) {
-    //     console.error('Errore nell\'eliminare il piatto:', error);
-    //   }
-    // },
   },
 };
 </script>
