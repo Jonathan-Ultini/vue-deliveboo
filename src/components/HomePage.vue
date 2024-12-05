@@ -2,9 +2,9 @@
   <div class="homepage">
     <h1>Ristoranti per Tipologia</h1>
 
-    <!-- Selezione dei tipi -->
     <div v-if="loading">Caricamento...</div>
     <div v-else-if="error">Errore: {{ error }}</div>
+
     <ul class="type-list">
       <li v-for="type in types" :key="type.id" @click="toggleTypeSelection(type.id)"
         :class="{ active: selectedTypes.includes(type.id) }">
@@ -18,7 +18,7 @@
       <div class="restaurant-slider">
         <router-link v-for="restaurant in restaurants" :key="restaurant.id"
           :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }">
-          <div class="restaurant-card" v-for="restaurant in restaurants" :key="restaurant.id">
+          <div class="restaurant-card">
             <h3>{{ restaurant.name }}</h3>
             <p>{{ restaurant.address }}</p>
             <p><strong>Tipi:</strong>
@@ -36,6 +36,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
