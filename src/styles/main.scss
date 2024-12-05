@@ -1,4 +1,10 @@
-// App font
-body{
-    font-family: 'Nunito', sans-serif;
+// App default backgeround & layout 
+body {
+    background: linear-gradient(180deg, rgba(255,144,79,1) 0%, rgba(255,240,170,1) 35%, rgba(255,255,255,1) 100%) !important;
+    background-repeat: no-repeat !important; 
+    background-size: cover !important; 
+    background-attachment: fixed !important; 
+    font-family: 'Nunito', sans-serif !important;
+
+    cursor: url("../assets/img/custom-cursor-deliveboo.png"), auto !important; 
 }

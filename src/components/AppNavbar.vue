@@ -10,18 +10,28 @@ export default {
 
 <template>
   <div class="nav-wrapper">
-    <ul class="d-flex justify-content-evenly">
-
-      <!-- Deliveboo Logo-->
-      <div class="logo">Delive<span>boo</span></div>
+    <ul>
 
       <!-- Navbar elements -->
-      <li><a href="#"><i class="fas fa-house"></i> Home</a></li>
-      <li><a href="#"><i class="fas fa-users"></i> About</a></li>
-      <li><a href="#"><i class="fas fa-envelope"></i> Contatti</a></li>
-      <li><a href="#"><i class="fas fa-user-pen"></i> Registrati</a></li>
-      <li><a href="#"><i class="fas fa-arrow-right-to-bracket"></i> Accedi</a></li>
-      <li><a href="#"><i class="fas fa-cart-shopping"></i></a></li>
+       <div class="nav d-flex justify-content-around">
+
+         <!-- Deliveboo Logo-->
+         <div class="logo me-2">Delive<span>boo</span></div>
+
+         <!-- Navbar elements LEFT -->
+         <div class="nav-left d-flex">
+           <li class="me-5"><a href="#"><i class="fas fa-house"></i> Home</a></li>
+           <li class="me-5"><a href="#"><i class="fas fa-users"></i> About</a></li>
+           <li class="me-5"><a href="#"><i class="fas fa-envelope"></i> Contatti</a></li>
+         </div>
+
+         <!-- Navbar elements RIGHT-->
+         <div class="nav-right d-flex">
+           <li class="me-2"><a href="#"><i class="fas fa-user-pen"></i> Registrati</a></li>
+           <li class="me-5"><a href="#"><i class="fas fa-arrow-right-to-bracket"></i> Accedi</a></li>
+           <li><a href="#"><i class="fas fa-cart-shopping"></i></a></li>
+         </div>
+       </div>
 
     </ul> 
   </div>
@@ -61,10 +71,11 @@ $custom-yellow: rgb(255, 214, 58);
   transform: scale(0.95) rotate(2deg);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
+
 // Navbar
 .nav-wrapper{
-  margin: 40px auto;
-  max-width: 90%;
+  margin: 25px auto;
+  max-width: 77%;
 }
 
 // Unordered List, ul elements
@@ -73,7 +84,7 @@ ul li {
 }
 
 a{
-  padding: 8px 15px;
+  padding: 7px 12px;
 
   color: black;
   text-decoration: none;
@@ -81,7 +92,7 @@ a{
   border-radius: 15px;
 
   display: inline-block;
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; // Aggiungi altre proprietà
+  transition: transform 0.5s ease, background-color 0.3s ease, box-shadow 0.3s ease; // Aggiungi altre proprietà
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -89,6 +100,9 @@ a:hover{
   transform: scale(1.05);
   background-color: rgb(255, 240, 170);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+
+     // Custom cursor hover 
+     cursor: url("../assets/img/cursorPointer.png"), auto 
 }
 
 a:active{
