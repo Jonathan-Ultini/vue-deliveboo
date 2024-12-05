@@ -7,6 +7,12 @@ const routes = [
     name: "Home",
     component: HomePage,
   },
+  {
+    path: '/restaurant/:id/dishes',
+    name: 'restaurant-dishes',
+    component: RestaurantDishes,
+    props: true,
+  },
 ];
 
 const router = createRouter({
