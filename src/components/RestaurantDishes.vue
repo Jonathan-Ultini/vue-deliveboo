@@ -7,6 +7,10 @@
 
     <div v-if="dishes.length > 0" class="dishes-container">
       <div v-for="dish in dishes" :key="dish.id" class="card">
+        <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
+          class="dish-image" />
+        <!-- <p>{{ dish.image_url }}</p> -->
+
         <h3 class="card-title">{{ dish.name }}</h3>
         <p class="card-description">{{ dish.description }}</p>
         <p class="card-price"><strong>Prezzo:</strong> {{ dish.price }} €</p>
@@ -17,6 +21,8 @@
     </div>
   </div>
 </template>
+
+
 
 <script>
 import axios from "axios";
@@ -38,7 +44,7 @@ export default {
     async fetchRestaurantDishes() {
       try {
         const restaurantId = this.$route.params.id;
-        //console.log("ID del ristorante:", restaurantId);
+        console.log("ID del ristorante:", restaurantId);
         const response = await axios.get(
           `http://localhost:8000/api/restaurants/${restaurantId}/dishes`
         );
@@ -46,6 +52,7 @@ export default {
         const restaurantResponse = await axios.get(
           `http://localhost:8000/api/restaurants/${restaurantId}`
         );
+
         this.restaurant = restaurantResponse.data.results;
         //console.log("Nome del ristorante:", this.restaurant);
         this.loading = false;
@@ -100,6 +107,17 @@ export default {
 .card:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dish-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px auto;
+  display: block;
 }
 
 .card-title {
