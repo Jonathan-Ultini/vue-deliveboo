@@ -16,15 +16,18 @@
     <div v-if="restaurants.length > 0">
       <h2>Ristoranti</h2>
       <div class="restaurant-slider">
-        <div class="restaurant-card" v-for="restaurant in restaurants" :key="restaurant.id">
-          <h3>{{ restaurant.name }}</h3>
-          <p>{{ restaurant.address }}</p>
-          <p><strong>Tipi:</strong>
-            <span v-for="type in restaurant.types" :key="type.id">
-              {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
-            </span>
-          </p>
-        </div>
+        <router-link v-for="restaurant in restaurants" :key="restaurant.id"
+          :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }">
+          <div class="restaurant-card" v-for="restaurant in restaurants" :key="restaurant.id">
+            <h3>{{ restaurant.name }}</h3>
+            <p>{{ restaurant.address }}</p>
+            <p><strong>Tipi:</strong>
+              <span v-for="type in restaurant.types" :key="type.id">
+                {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
+              </span>
+            </p>
+          </div>
+        </router-link>
       </div>
     </div>
 
