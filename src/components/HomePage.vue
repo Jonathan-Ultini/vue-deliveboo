@@ -2,8 +2,8 @@
   <div class="homepage">
     <h1>Ristoranti per Tipologia</h1>
 
-    <div v-if="loading">Caricamento...</div>
-    <div v-else-if="error">Errore: {{ error }}</div>
+    <div v-if="loading" class="loading">Caricamento...</div>
+    <div v-else-if="error" class="error">Errore: {{ error }}</div>
 
     <ul class="type-list">
       <li v-for="type in types" :key="type.id" @click="toggleTypeSelection(type.id)"
@@ -12,26 +12,29 @@
       </li>
     </ul>
 
-    <!-- Slider ristoranti -->
-    <div v-if="restaurants.length > 0">
+    <div v-if="restaurants.length > 0" class="slider-container">
       <h2>Ristoranti</h2>
-      <div class="restaurant-slider">
-        <router-link v-for="restaurant in restaurants" :key="restaurant.id"
-          :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }">
-          <div class="restaurant-card">
-            <h3>{{ restaurant.name }}</h3>
-            <p>{{ restaurant.address }}</p>
-            <p><strong>Tipi:</strong>
-              <span v-for="type in restaurant.types" :key="type.id">
-                {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
-              </span>
-            </p>
-          </div>
-        </router-link>
+      <div class="slider">
+        <button class="arrow left" @click="prevSlide">&#8592;</button>
+        <div class="slider-track">
+          <router-link v-for="restaurant in visibleRestaurants" :key="restaurant.id"
+            :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }">
+            <div class="restaurant-card">
+              <h3>{{ restaurant.name }}</h3>
+              <p>{{ restaurant.address }}</p>
+              <p><strong>Tipi:</strong>
+                <span v-for="type in restaurant.types" :key="type.id">
+                  {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
+                </span>
+              </p>
+            </div>
+          </router-link>
+        </div>
+        <button class="arrow right" @click="nextSlide">&#8594;</button>
       </div>
     </div>
 
-    <div v-else-if="!loading && !error">
+    <div v-else-if="!loading && !error" class="no-results">
       Nessun ristorante trovato.
     </div>
   </div>
@@ -50,25 +53,32 @@ export default {
       selectedTypes: [],
       loading: true,
       error: null,
+      currentIndex: 0, // Indice dello slider
+      visibleCount: 5, // Numero di elementi visibili nello slider
     };
+  },
+  computed: {
+    visibleRestaurants() {
+      const start = this.currentIndex;
+      const end = start + this.visibleCount;
+      return this.restaurants.slice(start, end);
+    },
   },
   mounted() {
     this.fetchTypes();
-    this.fetchRestaurants(); // Carica tutti i ristoranti all'inizio
+    this.fetchRestaurants();
   },
   methods: {
-    // Chiamata API per i tipi
     async fetchTypes() {
       try {
         const response = await axios.get("http://localhost:8000/api/types");
         this.types = response.data.results;
-        this.loading = false;
       } catch (err) {
         this.error = "Impossibile caricare i tipi di ristoranti.";
+      } finally {
         this.loading = false;
       }
     },
-    // Chiamata API per i ristoranti filtrati
     async fetchRestaurants() {
       this.loading = true;
       try {
@@ -79,16 +89,14 @@ export default {
             : "http://localhost:8000/api/restaurants";
         const response = await axios.get(url);
         this.restaurants = response.data.results.data;
-        // console.log("Ristoranti caricati:", this.restaurants);
+        this.currentIndex = 0; // Resetta lo slider
       } catch (err) {
         this.error = "Impossibile caricare i ristoranti.";
         this.restaurants = [];
-        // console.error("Errore API:", err);
       } finally {
         this.loading = false;
       }
     },
-    // Aggiunge o rimuove un tipo selezionato e aggiorna i risultati
     toggleTypeSelection(typeId) {
       const index = this.selectedTypes.indexOf(typeId);
       if (index === -1) {
@@ -98,17 +106,36 @@ export default {
       }
       this.fetchRestaurants();
     },
+    nextSlide() {
+      if (this.currentIndex + this.visibleCount < this.restaurants.length) {
+        this.currentIndex += 1;
+      }
+    },
+    prevSlide() {
+      if (this.currentIndex > 0) {
+        this.currentIndex -= 1;
+      }
+    },
   },
 };
 </script>
 
 
 <style scoped>
+.homepage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
 .type-list {
   list-style: none;
   padding: 0;
   display: flex;
+  justify-content: center;
   gap: 10px;
+  margin-bottom: 20px;
 }
 
 .type-list li {
@@ -130,26 +157,59 @@ export default {
   font-weight: bold;
 }
 
-.restaurant-slider {
+.slider-container {
+  position: relative;
+}
+
+.slider {
   display: flex;
-  overflow-x: auto;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.slider-track {
+  display: flex;
   gap: 10px;
+  overflow: hidden;
+  max-width: 100%;
   padding: 10px 0;
 }
 
 .restaurant-card {
-  min-width: 200px;
+  flex: 0 0 calc(20% - 10px);
+  /* 5 card visibili */
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
   background-color: #f8f9fa;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.restaurant-card h3 {
-  margin: 0 0 10px 0;
+.restaurant-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.restaurant-card p {
-  margin: 0;
+.arrow {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.arrow.left {
+  left: -20px;
+}
+
+.arrow.right {
+  right: -20px;
 }
 </style>
