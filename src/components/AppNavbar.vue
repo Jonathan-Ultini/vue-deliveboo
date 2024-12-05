@@ -13,11 +13,7 @@ export default {
     <ul class="d-flex justify-content-evenly">
 
       <!-- Deliveboo Logo-->
-      <div class="logo">
-        <figure>
-          <img src="../assets/img/deliveboo_logo.png" alt="">
-        </figure>
-      </div>
+      <div class="logo">Delive<span>boo</span></div>
 
       <!-- Navbar elements -->
       <li><a href="#"><i class="fas fa-house"></i> Home</a></li>
@@ -32,9 +28,39 @@ export default {
 </template>
 
 <style scoped lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
 // Custom default yellow 
 $custom-yellow: rgb(255, 214, 58);
 
+// Logo 
+.logo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem; 
+  font-weight: bold;
+  color: rgb(255, 239, 162); 
+  text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.logo span {
+  color: rgb(235, 82, 35); 
+  display: inline-block;
+  transform-origin: center;
+}
+
+.logo:hover {
+  transform: scale(1.1) rotate(-2deg);
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 165, 0, 0.5);
+}
+
+.logo:active {
+  transform: scale(0.95) rotate(2deg);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
 // Navbar
 .nav-wrapper{
   margin: 40px auto;
@@ -92,6 +118,6 @@ img{
 figure{
   margin: 0;
   padding: 0;
-  max-width: 35%;
+  max-width: 130px;
 }
 </style>

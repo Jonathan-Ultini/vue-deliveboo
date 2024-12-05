@@ -1,5 +1,5 @@
 <script>
-import AppNavbarVue from './AppNavbar.vue'
+import AppNavbarVue from './AppNavbar.vue';
 export default {
   components: {
     AppNavbarVue
@@ -28,11 +28,10 @@ export default {
             </div>
         </div>
      </div>
-
-    
 </template>
 
 <style scoped lang="scss">
+// Header Background image 
 #waves-bg{
   position: fixed;
   top: 0;
