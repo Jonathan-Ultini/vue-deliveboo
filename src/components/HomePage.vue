@@ -34,7 +34,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from "axios";
 
@@ -76,11 +75,11 @@ export default {
             : "http://localhost:8000/api/restaurants";
         const response = await axios.get(url);
         this.restaurants = response.data.results.data;
-        console.log("Ristoranti caricati:", this.restaurants);
+        // console.log("Ristoranti caricati:", this.restaurants);
       } catch (err) {
         this.error = "Impossibile caricare i ristoranti.";
         this.restaurants = [];
-        console.error("Errore API:", err);
+        // console.error("Errore API:", err);
       } finally {
         this.loading = false;
       }
