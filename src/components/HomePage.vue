@@ -5,11 +5,16 @@
     <div v-if="loading">Caricamento...</div>
     <div v-else-if="error">Errore: {{ error }}</div>
     <ul>
-      <li v-for="type in types" :key="type.id" @click="fetchRestaurants(type.id)"
-        :class="{ active: selectedType === type.id }">
+      <li v-for="type in types" :key="type.id" @click="toggleTypeSelection(type.id)"
+        :class="{ active: selectedTypes.includes(type.id) }">
         {{ type.name }}
       </li>
     </ul>
+
+    <!-- Pulsante per cercare -->
+    <button @click="fetchRestaurants" :disabled="selectedTypes.length === 0">
+      Cerca Ristoranti
+    </button>
 
     <!-- Lista ristoranti -->
     <div v-if="restaurants.length > 0">
@@ -20,7 +25,9 @@
         </li>
       </ul>
     </div>
-    <div v-else-if="!loading && !error">Nessun ristorante trovato.</div>
+    <div v-else-if="!loading && !error && selectedTypes.length > 0">
+      Nessun ristorante trovato per i tipi selezionati.
+    </div>
   </div>
 </template>
 
@@ -33,7 +40,7 @@ export default {
     return {
       types: [],
       restaurants: [],
-      selectedType: null,
+      selectedTypes: [], // Lista degli ID selezionati
       loading: true,
       error: null,
     };
@@ -53,19 +60,31 @@ export default {
         this.loading = false;
       }
     },
+    // Aggiunge o rimuove un tipo selezionato
+    toggleTypeSelection(typeId) {
+      const index = this.selectedTypes.indexOf(typeId);
+      if (index === -1) {
+        this.selectedTypes.push(typeId); // Aggiunge il tipo
+      } else {
+        this.selectedTypes.splice(index, 1); // Rimuove il tipo
+      }
+    },
     // Chiamata API per i ristoranti filtrati
-    async fetchRestaurants(typeId) {
+    async fetchRestaurants() {
       try {
-        this.selectedType = typeId;
+        const queryString = this.selectedTypes.join(",");
         const response = await axios.get(
-          `http://localhost:8000/api/restaurants?type=${typeId}`
+          `http://localhost:8000/api/restaurants?types=${queryString}`
         );
-        this.restaurants = response.data.results; // Adatta alla struttura dell'API
+        this.restaurants = response.data.results.data; // Adatta se necessario
+        console.log("Ristoranti caricati:", this.restaurants); // Logga i ristoranti
       } catch (err) {
         this.error = "Impossibile caricare i ristoranti.";
         this.restaurants = [];
+        console.error("Errore API:", err); // Logga l'errore
       }
-    },
+    }
+    ,
   },
 };
 </script>
@@ -95,5 +114,20 @@ export default {
   background-color: #007bff;
   color: white;
   font-weight: bold;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>
