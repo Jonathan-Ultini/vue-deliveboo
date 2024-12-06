@@ -48,72 +48,97 @@ export default {
   name: "HomePage",
   data() {
     return {
-      types: [],
-      restaurants: [],
-      selectedTypes: [],
-      loading: true,
-      error: null,
-      currentIndex: 0, // Indice dello slider
-      visibleCount: 5, // Numero di elementi visibili nello slider
+      types: [], // array che conterrá tutte le tipologie di ristoranti
+      restaurants: [], // array che conterrá i ristoranti
+      selectedTypes: [], // array degli ID delle tipologie selezionaate
+      loading: true, // stato caricamento dei dati
+      error: null, // messaggio di errore in caso di problemi con le api
+      currentIndex: 0, // Indice dello slider per tracciare il primo elemento
+      visibleCount: 5, // numero massimo di ristoranti visibili nello slider
     };
   },
   computed: {
+    // calcola i ristoranti visibili in base all'indice corrente dello slider
     visibleRestaurants() {
-      const start = this.currentIndex;
-      const end = start + this.visibleCount;
-      return this.restaurants.slice(start, end);
+      const start = this.currentIndex; // indice iniziale
+      const end = start + this.visibleCount; //indice finale
+      return this.restaurants.slice(start, end); //ritorna una porzione dell'array
     },
   },
   mounted() {
-    this.fetchTypes();
-    this.fetchRestaurants();
+    // quando il componente viene montato, carica i tipi e i ristoranti
+    this.fetchTypes(); // carica i tipi di ristoranti dall'api
+    this.fetchRestaurants(); // carica ristoranti dall'api
   },
   methods: {
+    // metodo per ottenere le tipologie di ristoranti dei tipi
     async fetchTypes() {
       try {
+        // effettua una richiesta GET all'endpoint dei tipi
         const response = await axios.get("http://localhost:8000/api/types");
-        this.types = response.data.results;
+        this.types = response.data.results; // salva i tipi di ristoranti nell'array
       } catch (err) {
+        // in caso di errore, salva un messaggio di errore
         this.error = "Impossibile caricare i tipi di ristoranti.";
       } finally {
+        // fine del caricamento, indipendentemente dal risultato
         this.loading = false;
       }
     },
+
+
+    // metodo per ottenere i ristoranti filtrati in base ai tipi selezionati
     async fetchRestaurants() {
-      this.loading = true;
+      this.loading = true; // imposta lo stato di caricamento a true
       try {
+        // costruisce una stringa con gli id delle tipologie selezionate
         const queryString = this.selectedTypes.join(",");
         const url =
           queryString.length > 0
-            ? `http://localhost:8000/api/restaurants?types=${queryString}`
-            : "http://localhost:8000/api/restaurants";
-        const response = await axios.get(url);
-        this.restaurants = response.data.results.data;
-        this.currentIndex = 0; // Resetta lo slider
+            ? `http://localhost:8000/api/restaurants?types=${queryString}` // URL con filtro
+            : "http://localhost:8000/api/restaurants"; // URL senza filtro
+        const response = await axios.get(url); // effettua la richiesta GET
+        this.restaurants = response.data.results.data; // salva i ristoranti nell'array
+        this.currentIndex = 0; // Resetta lo slider all'inizio
       } catch (err) {
+        // In caso di errore, salva un messaggio e resetta l'elenco dei ristoranti
         this.error = "Impossibile caricare i ristoranti.";
         this.restaurants = [];
       } finally {
+        // Fine del caricamento, indipendentemente dal risultato
         this.loading = false;
       }
     },
+
+
+    // Metodo per gestire la selezione/deselezione di una tipologia
     toggleTypeSelection(typeId) {
-      const index = this.selectedTypes.indexOf(typeId);
+      const index = this.selectedTypes.indexOf(typeId); // Cerca l'indice del tipo selezionato
       if (index === -1) {
+        // Se il tipo non è presente, lo aggiunge
         this.selectedTypes.push(typeId);
       } else {
+        // Se il tipo è già presente, lo rimuove
         this.selectedTypes.splice(index, 1);
       }
-      this.fetchRestaurants();
+      this.fetchRestaurants(); // Aggiorna l'elenco dei ristoranti in base ai tipi selezionati
     },
+
+
+    // Metodo per passare al prossimo gruppo di ristoranti nello slider
     nextSlide() {
+      // Controlla se ci sono ancora elementi visibili dopo il gruppo corrente
       if (this.currentIndex + this.visibleCount < this.restaurants.length) {
-        this.currentIndex += 1;
+        this.currentIndex += 1; // Incrementa l'indice corrente
       }
     },
+
+
+    // Metodo per tornare al gruppo precedente di ristoranti nello slider
     prevSlide() {
+      // Controlla se l'indice corrente è maggiore di 0
       if (this.currentIndex > 0) {
-        this.currentIndex -= 1;
+        this.currentIndex -= 1; // Decrementa l'indice corrente
       }
     },
   },
