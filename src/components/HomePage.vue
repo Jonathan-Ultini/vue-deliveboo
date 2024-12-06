@@ -18,7 +18,7 @@
         <button class="arrow left" @click="prevSlide">&#8592;</button>
         <div class="slider-track">
           <router-link v-for="restaurant in visibleRestaurants" :key="restaurant.id"
-            :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }">
+            :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }" class="text-dark text-decoration-none">
             <div class="restaurant-card">
               <h3>{{ restaurant.name }}</h3>
               <p>{{ restaurant.address }}</p>
@@ -236,5 +236,14 @@ export default {
 
 .arrow.right {
   right: -20px;
+}
+
+/* Rimuove colore blu e sottolineatura dai link */
+.text-dark {
+  color: #212529 !important;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
 }
 </style>
