@@ -65,6 +65,8 @@ $custom-yellow: rgb(255, 214, 58);
 .logo:hover {
   transform: scale(1.1) rotate(-2deg);
   text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 165, 0, 0.5);
+
+  cursor: url("../assets/img/cursorPointer.png"), auto 
 }
 
 .logo:active {
