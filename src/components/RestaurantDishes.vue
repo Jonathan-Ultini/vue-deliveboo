@@ -44,7 +44,7 @@ export default {
     async fetchRestaurantDishes() {
       try {
         const restaurantId = this.$route.params.id;
-        console.log("ID del ristorante:", restaurantId);
+        // console.log("ID del ristorante:", restaurantId);
         const response = await axios.get(
           `http://localhost:8000/api/restaurants/${restaurantId}/dishes`
         );
