@@ -9,31 +9,36 @@ export default {
 </script>
 
 <template>
-  <div class="nav-wrapper">
-    <ul>
+  <div class="container-fluid">
+    <div class="nav-wrapper">
+      <ul>
+        <div class="row align-items-center">
 
-      <!-- Navbar elements -->
-       <div class="nav d-flex justify-content-around">
+          <!-- Logo -->
+          <div class="col-12 col-md-3 text-center text-md-start mb-3 mb-md-0">
+            <div class="logo me-2">Home<span>boo</span></div>
+          </div>
 
-         <!-- Deliveboo Logo-->
-         <div class="logo me-2">Delive<span>boo</span></div>
+          <!-- Navbar elements LEFT -->
+          <div class="col-12 col-md-6 d-flex justify-content-center mb-3 mb-md-0">
+            <div class="nav-left d-flex">
+              <li class="me-3"><a href="#"><i class="fas fa-house"></i> Home</a></li>
+              <li class="me-3"><a href="#"><i class="fas fa-users"></i> About</a></li>
+              <li class="me-3"><a href="#"><i class="fas fa-envelope"></i> Contatti</a></li>
+            </div>
+          </div>
 
-         <!-- Navbar elements LEFT -->
-         <div class="nav-left d-flex">
-           <li class="me-5"><a href="#"><i class="fas fa-house"></i> Home</a></li>
-           <li class="me-5"><a href="#"><i class="fas fa-users"></i> About</a></li>
-           <li class="me-5"><a href="#"><i class="fas fa-envelope"></i> Contatti</a></li>
-         </div>
-
-         <!-- Navbar elements RIGHT-->
-         <div class="nav-right d-flex">
-           <li class="me-2"><a href="#"><i class="fas fa-user-pen"></i> Registrati</a></li>
-           <li class="me-5"><a href="#"><i class="fas fa-arrow-right-to-bracket"></i> Accedi</a></li>
-           <li><a href="#"><i class="fas fa-cart-shopping"></i></a></li>
-         </div>
-       </div>
-
-    </ul> 
+          <!-- Navbar elements RIGHT -->
+          <div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end">
+            <div class="nav-right d-flex">
+              <li class="me-2"><a href="#"><i class="fas fa-user-pen"></i> Registrati</a></li>
+              <li class="me-2"><a href="#"><i class="fas fa-arrow-right-to-bracket"></i> Accedi</a></li>
+              <li><a href="#"><i class="fas fa-cart-shopping"></i></a></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
   </div>
 </template>
 
