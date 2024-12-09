@@ -165,6 +165,8 @@ export default {
   list-style: none;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
@@ -172,10 +174,11 @@ export default {
 
 .type-list li {
   cursor: pointer;
-  padding: 10px 15px;
+  padding: 0.5rem 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f8f9fa;
+  text-align: center;
   transition: background-color 0.3s ease;
 }
 
@@ -190,7 +193,7 @@ export default {
 }
 
 .slider-container {
-  position: relative;
+  overflow: hidden;
 }
 
 .slider {
@@ -202,20 +205,29 @@ export default {
 
 .slider-track {
   display: flex;
-  gap: 10px;
+  flex-wrap: nowrap;
+  gap: 1rem;
   overflow: hidden;
   max-width: 100%;
   padding: 10px 0;
 }
 
 .restaurant-card {
-  flex: 0 0 calc(20% - 10px);
-  /* 5 card visibili */
+  flex: 0 0 auto;
   border: 1px solid #ddd;
+  width: 100%;
+  max-width: 250px;
+  text-align: center;
   border-radius: 5px;
   padding: 15px;
   background-color: #f8f9fa;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.restaurant-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
 }
 
 .restaurant-card:hover {
