@@ -4,8 +4,8 @@
       <div class="row">
         <div class="col-12 text-center">
           <h5>Chi siamo</h5>
-          <div class="d-flex justify-content-center mt-3">
-            <div class="me-4">
+          <div class="col-12 d-flex flex-wrap justify-content-center mt-3">
+            <div class="d-flex flex-column align-items-center me-4">
               <img src="https://avatars.githubusercontent.com/u/173849681?v=4" alt="Dev 1"
                 class="img-fluid rounded-circle" />
               <div>
@@ -13,7 +13,7 @@
                 <a href="https://github.com/Jonathan-Ultini" target="_blank" class="text-white">GitHub</a>
               </div>
             </div>
-            <div class="me-4">
+            <div class="d-flex flex-column align-items-center me-4">
               <img src="https://avatars.githubusercontent.com/u/173928171?v=4" alt="Dev 2"
                 class="img-fluid rounded-circle" />
               <div>
@@ -21,7 +21,7 @@
                 <a href="https://github.com/Marco-Guarnera" target="_blank" class="text-white">GitHub</a>
               </div>
             </div>
-            <div class="me-4">
+            <div class="d-flex flex-column align-items-center me-4">
               <img src="https://avatars.githubusercontent.com/u/171725649?v=4" alt="Dev 3"
                 class="img-fluid rounded-circle" />
               <div>
@@ -29,7 +29,7 @@
                 <a href="https://github.com/JoseManuel-Feliz" target="_blank" class="text-white">GitHub</a>
               </div>
             </div>
-            <div class="me-4">
+            <div class="d-flex flex-column align-items-center me-4">
               <img src="https://avatars.githubusercontent.com/u/172858786?v=4" alt="Dev 4"
                 class="img-fluid rounded-circle" />
               <div>
@@ -37,7 +37,7 @@
                 <a href="https://github.com/SalvatoreGiacomazzo" target="_blank" class="text-white">GitHub</a>
               </div>
             </div>
-            <div class="me-4">
+            <div class="d-flex flex-column align-items-center me-4">
               <img src="https://avatars.githubusercontent.com/u/171201254?v=4" alt="Dev 5"
                 class="img-fluid rounded-circle" />
               <div>
