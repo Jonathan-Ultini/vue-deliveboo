@@ -1,51 +1,93 @@
 <template>
   <div class="homepage">
-    <h1>Ristoranti per Tipologia</h1>
-
-    <div v-if="loading" class="loading">Caricamento...</div>
-    <div v-else-if="error" class="error">Errore: {{ error }}</div>
-
-    <ul class="type-list">
-      <li v-for="type in types" :key="type.id" @click="toggleTypeSelection(type.id)"
-        :class="{ active: selectedTypes.includes(type.id) }">
-        {{ type.name }}
-      </li>
-    </ul>
-
-    <div v-if="restaurants.length > 0" class="slider-container">
-      <h2>Ristoranti</h2>
-      <div class="slider">
-        <button class="arrow left" @click="prevSlide">&#8592;</button>
-        <div class="slider-track">
-          <router-link v-for="restaurant in visibleRestaurants" :key="restaurant.id"
-            :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }" class="text-dark text-decoration-none">
-            <div class="restaurant-card">
-              <div class="card-cover">
-                <img v-if="restaurant.dishes && restaurant.dishes[0]"
-                  :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante" />
-                <div v-else class="placeholder-image">Nessuna immagine</div>
-              </div>
-              <div class="card-content">
-                <h3>{{ restaurant.name }}</h3>
-                <p>{{ restaurant.address }}</p>
-                <p><strong>Tipi:</strong>
-                  <span v-for="type in restaurant.types" :key="type.id">
-                    {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </router-link>
+    <div class="container">
+      <!-- Titolo -->
+      <div class="row">
+        <div class="col-12 text-center">
+          <h1 class="my-4">Ristoranti per Tipologia</h1>
         </div>
-        <button class="arrow right" @click="nextSlide">&#8594;</button>
       </div>
-    </div>
 
-    <div v-else-if="!loading && !error" class="no-results">
-      Nessun ristorante trovato.
+
+      <!-- Lista tipologie -->
+      <div class="row">
+        <div class="col-12">
+          <ul class="type-list d-flex flex-wrap justify-content-center">
+            <li v-for="type in types" :key="type.id" @click="toggleTypeSelection(type.id)"
+              :class="['btn', 'me-2', 'mb-2', selectedTypes.includes(type.id) ? 'btn-primary' : 'btn-outline-secondary']">
+              {{ type.name }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Caricamento o errore -->
+      <div class="row">
+        <div v-if="loading" class="col-12 text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Caricamento...</span>
+          </div>
+        </div>
+        <div v-else-if="error" class="col-12 text-center text-danger">
+          Errore: {{ error }}
+        </div>
+      </div>
+
+
+      <!-- Slider -->
+      <div v-if="restaurants.length > 0" class="row mt-4">
+        <div class="col-12">
+          <h2 class="text-center">Ristoranti</h2>
+          <div class="slider position-relative">
+            <!-- Pulsante sinistro -->
+            <button class="btn btn-primary arrow left" @click="prevSlide">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <!-- Card slider -->
+            <div class="d-flex overflow-hidden slider-track">
+              <router-link v-for="restaurant in visibleRestaurants" :key="restaurant.id"
+                :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }"
+                class="restaurant-card text-decoration-none mx-2">
+                <div class="card">
+                  <div class="card-cover">
+                    <img v-if="restaurant.dishes && restaurant.dishes[0]"
+                      :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante"
+                      class="card-img-top" />
+                    <div v-else class="placeholder-image">Nessuna immagine</div>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">{{ restaurant.name }}</h5>
+                    <p class="card-text">{{ restaurant.address }}</p>
+                    <p class="card-text">
+                      <strong>Tipi:</strong>
+                      <span v-for="type in restaurant.types" :key="type.id">
+                        {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </router-link>
+            </div>
+
+            <!-- Pulsante destro -->
+            <button class="btn btn-primary arrow right" @click="nextSlide">
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nessun risultato -->
+      <div v-else-if="!loading && !error" class="row">
+        <div class="col-12 text-center">
+          <p class="text-muted">Nessun ristorante trovato.</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
+
 
 
 <script>
@@ -174,12 +216,8 @@ export default {
 
 .type-list li {
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f8f9fa;
-  text-align: center;
-  transition: background-color 0.3s ease;
+  padding: 0.5rem 1rem;
 }
 
 .type-list li:hover {
@@ -204,24 +242,14 @@ export default {
 }
 
 .slider-track {
-  display: flex;
-  flex-wrap: nowrap;
   gap: 1rem;
-  overflow: hidden;
   max-width: 100%;
   padding: 10px 0;
 }
 
 .restaurant-card {
   flex: 0 0 auto;
-  border: 1px solid #ddd;
-  width: 100%;
   max-width: 250px;
-  text-align: center;
-  border-radius: 5px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .restaurant-card img {
@@ -236,25 +264,19 @@ export default {
 }
 
 .arrow {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
 }
 
 .arrow.left {
-  left: -20px;
+  position: absolute;
+  left: -40px;
 }
 
 .arrow.right {
-  right: -20px;
+  position: absolute;
+  right: -40px;
 }
 
 /* Rimuove colore blu e sottolineatura dai link */
@@ -268,17 +290,13 @@ export default {
 
 /* Contenitore immagine di copertina */
 .card-cover {
-  width: 100%;
   height: 150px;
   overflow: hidden;
-  background-color: #f0f0f0;
-  border-radius: 5px 5px 0 0;
 }
 
 .card-cover img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
+  height: 100%;
 }
 
 .placeholder-image {
@@ -305,34 +323,5 @@ export default {
 .card-content p {
   margin: 0;
   color: #555;
-}
-
-/* Responsività */
-@media screen and (max-width: 1200px) {
-  .restaurant-card {
-    flex: 0 0 calc(25% - 10px);
-    /* 4 card su schermi medi */
-  }
-}
-
-@media screen and (max-width: 992px) {
-  .restaurant-card {
-    flex: 0 0 calc(33.33% - 10px);
-    /* 3 card su tablet */
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .restaurant-card {
-    flex: 0 0 calc(50% - 10px);
-    /* 2 card su schermi piccoli */
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .restaurant-card {
-    flex: 0 0 100%;
-    /* 1 card su schermi molto piccoli */
-  }
 }
 </style>
