@@ -271,12 +271,12 @@ export default {
 
 .arrow.left {
   position: absolute;
-  left: -40px;
+  left: -30px;
 }
 
 .arrow.right {
   position: absolute;
-  right: -40px;
+  right: -30px;
 }
 
 /* Rimuove colore blu e sottolineatura dai link */
@@ -297,15 +297,7 @@ export default {
 .card-cover img {
   object-fit: cover;
   height: 100%;
-}
-
-.placeholder-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-size: 14px;
-  color: #999;
+  width: 100%;
 }
 
 /* Contenuto della card */
@@ -323,5 +315,30 @@ export default {
 .card-content p {
   margin: 0;
   color: #555;
+}
+
+/* Contenuto della card */
+.card-body {
+  padding: 10px;
+  text-align: left;
+  flex-grow: 1;
+}
+
+/* Stile per il testo che non fa allargare la card */
+.card-body .card-title,
+.card-body .card-text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.placeholder-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 14px;
+  color: #999;
 }
 </style>
