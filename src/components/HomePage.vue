@@ -20,13 +20,20 @@
           <router-link v-for="restaurant in visibleRestaurants" :key="restaurant.id"
             :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }" class="text-dark text-decoration-none">
             <div class="restaurant-card">
-              <h3>{{ restaurant.name }}</h3>
-              <p>{{ restaurant.address }}</p>
-              <p><strong>Tipi:</strong>
-                <span v-for="type in restaurant.types" :key="type.id">
-                  {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
-                </span>
-              </p>
+              <div class="card-cover">
+                <img v-if="restaurant.dishes && restaurant.dishes[0]"
+                  :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante" />
+                <div v-else class="placeholder-image">Nessuna immagine</div>
+              </div>
+              <div class="card-content">
+                <h3>{{ restaurant.name }}</h3>
+                <p>{{ restaurant.address }}</p>
+                <p><strong>Tipi:</strong>
+                  <span v-for="type in restaurant.types" :key="type.id">
+                    {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
+                  </span>
+                </p>
+              </div>
             </div>
           </router-link>
         </div>
@@ -245,5 +252,75 @@ export default {
 
 .text-decoration-none {
   text-decoration: none !important;
+}
+
+/* Contenitore immagine di copertina */
+.card-cover {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  border-radius: 5px 5px 0 0;
+}
+
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 14px;
+  color: #999;
+}
+
+/* Contenuto della card */
+.card-content {
+  padding: 10px;
+  text-align: left;
+}
+
+.card-content h3 {
+  font-size: 1.2rem;
+  margin: 0 0 5px;
+  color: #333;
+}
+
+.card-content p {
+  margin: 0;
+  color: #555;
+}
+
+/* Responsività */
+@media screen and (max-width: 1200px) {
+  .restaurant-card {
+    flex: 0 0 calc(25% - 10px);
+    /* 4 card su schermi medi */
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .restaurant-card {
+    flex: 0 0 calc(33.33% - 10px);
+    /* 3 card su tablet */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .restaurant-card {
+    flex: 0 0 calc(50% - 10px);
+    /* 2 card su schermi piccoli */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .restaurant-card {
+    flex: 0 0 100%;
+    /* 1 card su schermi molto piccoli */
+  }
 }
 </style>
