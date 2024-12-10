@@ -38,6 +38,7 @@
                   <strong>Prezzo:</strong> {{ dish.price }} €
                 </p>
                 <button class="btn btn-primary btn-sm">
+                  <!-- @click="addToCart(dish)" da mettere in button -->
                   <i class="bi bi-plus"></i> Aggiungi
                 </button>
               </div>
@@ -60,9 +61,11 @@
 
 <script>
 import axios from "axios";
+import CartStore from "@/cart.js";
 
 export default {
   name: "RestaurantDishes",
+  mixins: [CartStore], // Aggiunge i metodi e i dati di cart.js
   data() {
     return {
       dishes: [],
@@ -98,6 +101,10 @@ export default {
           this.error = 'Errore durante il caricamento dei dati.';
         }
       }
+    },
+    // Metodo per aggiungere un piatto al carrello
+    addToCart(dish) {
+      this.addToCart(dish, this.restaurant.id);
     },
   },
 };
