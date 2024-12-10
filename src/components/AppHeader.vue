@@ -1,8 +1,7 @@
 <script>
-import AppNavbarVue from './AppNavbar.vue';
 export default {
   components: {
-    AppNavbarVue
+    AppNavbarVue2
   },
   data() {
     return {
@@ -24,7 +23,7 @@ export default {
               </svg>
 
               <!-- Navbar component -->
-              <AppNavbarVue/>
+              <AppNavbarVue2/>
             </div>
         </div>
      </div>
