@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../components/HomePage.vue";
 import RestaurantDishes from "../components/RestaurantDishes.vue";
+import NotFound from "../components/NotFound.vue";
 
 const routes = [
   {
@@ -13,6 +14,15 @@ const routes = [
     name: 'restaurant-dishes',
     component: RestaurantDishes,
     props: true,
+  },
+  {
+    path: '/404',
+    name: 'not-found',
+    component: NotFound,
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/404',
   },
 ];
 
