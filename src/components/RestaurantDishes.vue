@@ -91,9 +91,12 @@ export default {
         //console.log("Nome del ristorante:", this.restaurant);
         this.loading = false;
       } catch (err) {
-        this.error = "Impossibile caricare i dati.";
-        this.loading = false;
-        console.error("Errore API:", err);
+        if (err.response && err.response.status === 404) {
+          // Reindirizza alla pagina 404
+          this.$router.push({ name: 'not-found' });
+        } else {
+          this.error = 'Errore durante il caricamento dei dati.';
+        }
       }
     },
   },
