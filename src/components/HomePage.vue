@@ -34,47 +34,37 @@
       </div>
 
 
-      <!-- Slider -->
+      <!-- Griglia Ristoranti -->
       <div v-if="restaurants.length > 0" class="row mt-4">
         <div class="col-12">
-          <h2 class="text-center">Ristoranti</h2>
-          <div class="slider position-relative">
-            <!-- Pulsante sinistro -->
-            <button class="btn btn-primary arrow left" @click="prevSlide">
-              <i class="bi bi-arrow-left"></i>
-            </button>
-
-            <!-- Card slider -->
-            <div class="d-flex overflow-hidden slider-track">
-              <router-link v-for="restaurant in visibleRestaurants" :key="restaurant.id"
-                :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }"
-                class="restaurant-card text-decoration-none mx-2">
-                <div class="card">
-                  <div class="card-cover">
-                    <img v-if="restaurant.dishes && restaurant.dishes[0]"
-                      :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante"
-                      class="card-img-top" />
-                    <div v-else class="placeholder-image">Nessuna immagine</div>
-                  </div>
-                  <div class="card-body">
-                    <h5 class="card-title">{{ restaurant.name }}</h5>
-                    <p class="card-text">{{ restaurant.address }}</p>
-                    <p class="card-text">
-                      <strong>Tipi:</strong>
-                      <span v-for="type in restaurant.types" :key="type.id">
-                        {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
-                      </span>
-                    </p>
-                  </div>
+          <h2 class="text-center mb-4">Ristoranti</h2>
+        </div>
+        <div v-for="restaurant in restaurants" :key="restaurant.id" class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          <router-link :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }"
+            class="restaurant-card text-decoration-none">
+            <div class="card">
+              <!-- Immagine del Ristorante -->
+              <div class="card-cover">
+                <img v-if="restaurant.dishes && restaurant.dishes[0]"
+                  :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante"
+                  class="card-img-top" />
+                <div v-else class="placeholder-image text-center">
+                  Nessuna immagine
                 </div>
-              </router-link>
+              </div>
+              <!-- Dettagli del Ristorante -->
+              <div class="card-body">
+                <h5 class="card-title">{{ restaurant.name }}</h5>
+                <p class="card-text">{{ restaurant.address }}</p>
+                <p class="card-text">
+                  <strong>Tipi:</strong>
+                  <span v-for="type in restaurant.types" :key="type.id">
+                    {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
+                  </span>
+                </p>
+              </div>
             </div>
-
-            <!-- Pulsante destro -->
-            <button class="btn btn-primary arrow right" @click="nextSlide">
-              <i class="bi bi-arrow-right"></i>
-            </button>
-          </div>
+          </router-link>
         </div>
       </div>
 
