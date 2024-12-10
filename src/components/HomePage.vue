@@ -162,24 +162,6 @@ export default {
       }
       this.fetchRestaurants(); // Aggiorna l'elenco dei ristoranti in base ai tipi selezionati
     },
-
-
-    // Metodo per passare al prossimo gruppo di ristoranti nello slider
-    nextSlide() {
-      // Controlla se ci sono ancora elementi visibili dopo il gruppo corrente
-      if (this.currentIndex + this.visibleCount < this.restaurants.length) {
-        this.currentIndex += 1; // Incrementa l'indice corrente
-      }
-    },
-
-
-    // Metodo per tornare al gruppo precedente di ristoranti nello slider
-    prevSlide() {
-      // Controlla se l'indice corrente è maggiore di 0
-      if (this.currentIndex > 0) {
-        this.currentIndex -= 1; // Decrementa l'indice corrente
-      }
-    },
   },
 };
 </script>
