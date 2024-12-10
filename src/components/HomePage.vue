@@ -71,9 +71,10 @@
       <!-- Nessun risultato -->
       <div v-else-if="!loading && !error" class="row">
         <div class="col-12 text-center">
-          <p class="text-muted">Nessun ristorante trovato.</p>
+          <p class="text-danger fs-4 fw-bold">Nessun ristorante trovato con le tipologie richieste.</p>
         </div>
       </div>
+
     </div>
   </div>
 </template>
