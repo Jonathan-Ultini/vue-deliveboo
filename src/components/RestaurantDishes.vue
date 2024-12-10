@@ -1,26 +1,60 @@
 <template>
-  <div class="restaurant-dishes">
-    <h1 class="title">Piatti di {{ restaurant.name }}</h1>
+  <div class="restaurant-dishes container">
+    <!-- Titolo del Ristorante -->
+    <h1 class="title text-center my-4">Piatti di {{ restaurant.name }}</h1>
 
-    <div v-if="loading" class="loading">Caricamento...</div>
-    <div v-else-if="error" class="error">Errore: {{ error }}</div>
-
-    <div v-if="dishes.length > 0" class="dishes-container">
-      <div v-for="dish in dishes" :key="dish.id" class="card">
-        <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
-          class="dish-image" />
-        <!-- <p>{{ dish.image_url }}</p> -->
-
-        <h3 class="card-title">{{ dish.name }}</h3>
-        <p class="card-description">{{ dish.description }}</p>
-        <p class="card-price"><strong>Prezzo:</strong> {{ dish.price }} €</p>
+    <!-- Caricamento o errore -->
+    <div v-if="loading" class="loading text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Caricamento...</span>
       </div>
     </div>
-    <div v-else-if="!loading && !error" class="no-dishes">
-      Nessun piatto trovato.
+    <div v-else-if="error" class="error text-danger text-center">
+      Errore: {{ error }}
+    </div>
+
+    <!-- Lista dei Piatti -->
+    <div v-if="dishes.length > 0">
+      <div v-for="dish in dishes" :key="dish.id" class="card mb-3">
+        <div class="row g-0 align-items-center">
+          <!-- Immagine del Piatto -->
+          <div class="col-md-4">
+            <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
+              class="img-fluid rounded-start" />
+            <div v-else class="placeholder-image d-flex align-items-center justify-content-center">
+              Nessuna immagine
+            </div>
+          </div>
+
+          <!-- Informazioni del Piatto -->
+          <div class="col-md-8">
+            <div class="card-body d-flex flex-column justify-content-between h-100">
+              <div>
+                <h3 class="card-title">{{ dish.name }}</h3>
+                <p class="card-description">{{ dish.description }}</p>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <p class="card-price mb-0">
+                  <strong>Prezzo:</strong> {{ dish.price }} €
+                </p>
+                <button class="btn btn-primary btn-sm">
+                  <i class="bi bi-plus"></i> Aggiungi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nessun Piatto -->
+    <div v-else-if="!loading && !error" class="no-dishes text-center">
+      <p class="text-muted">Nessun piatto trovato.</p>
     </div>
   </div>
 </template>
+
+
 
 
 
@@ -68,73 +102,52 @@ export default {
 
 <style scoped>
 .restaurant-dishes {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.loading,
-.error,
-.no-dishes {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.dishes-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .card {
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
-  width: 250px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background-color: #fff;
+  overflow: hidden;
 }
 
-.card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.card-body {
+  padding: 16px;
 }
 
-.dish-image {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
+.img-fluid {
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 10px auto;
-  display: block;
+}
+
+.placeholder-image {
+  height: 150px;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-size: 1rem;
+  text-align: center;
 }
 
 .card-title {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  color: #333;
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
 .card-description {
-  font-size: 1rem;
-  margin-bottom: 10px;
-  color: #666;
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 
 .card-price {
-  font-size: 1.2rem;
-  color: #007bff;
+  font-size: 1rem;
   font-weight: bold;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 </style>
