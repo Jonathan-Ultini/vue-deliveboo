@@ -49,7 +49,7 @@
 
     <!-- Nessun Piatto -->
     <div v-else-if="!loading && !error" class="no-dishes text-center">
-      <p class="text-muted">Nessun piatto trovato.</p>
+      <p class="text-danger fs-4 fw-bold">Nessun piatto trovato.</p>
     </div>
   </div>
 </template>
