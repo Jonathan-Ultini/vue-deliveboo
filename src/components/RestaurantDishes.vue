@@ -70,6 +70,17 @@ export default {
   async mounted() {
     this.fetchRestaurantDishes();
   },
+  async beforeRouteUpdate(to, from, next) {
+    this.loading = true;
+    try {
+      const restaurantSlug = to.params.slug;
+      await this.fetchRestaurantDishes(restaurantSlug);
+      next();
+    } catch (err) {
+      this.error = 'Error during data upload.';
+      next(false);
+    }
+  },
   methods: {
     async fetchRestaurantDishes() {
       try {
