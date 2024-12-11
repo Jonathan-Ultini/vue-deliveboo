@@ -6,7 +6,7 @@
     </div>
     <div v-if="cart.items.length > 0" class="cart-body">
       <div v-for="item in cart.items" :key="item.id" class="cart-item">
-        <img :src="item.image" alt="Piatto" class="item-image" />
+        <img :src="`http://localhost:8000` + item.image" alt="Piatto" class="item-image" />
         <div class="item-details">
           <h4>{{ item.name }}</h4>
           <p>Prezzo: {{ item.price }} €</p>
@@ -111,5 +111,9 @@ export default {
   padding: 10px 15px;
   border: none;
   cursor: pointer;
+}
+
+.remove-btn {
+  height: 30px;
 }
 </style>
