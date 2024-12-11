@@ -40,7 +40,7 @@
           <h2 class="text-center mb-4">Ristoranti</h2>
         </div>
         <div v-for="restaurant in restaurants" :key="restaurant.id" class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-          <router-link :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }"
+          <router-link :to="{ name: 'restaurant-dishes', params: { slug: restaurant.slug } }"
             class="restaurant-card text-decoration-none">
             <div class="card">
               <!-- Immagine del Ristorante -->
@@ -138,7 +138,18 @@ export default {
             ? `http://localhost:8000/api/restaurants?types=${queryString}` // URL con filtro
             : "http://localhost:8000/api/restaurants"; // URL senza filtro
         const response = await axios.get(url); // effettua la richiesta GET
-        this.restaurants = response.data.results.data; // salva i ristoranti nell'array
+
+
+        this.restaurants = response.data.results.data.map((restaurant) => {
+          return {
+            id: restaurant.id,
+            name: restaurant.name,
+            address: restaurant.address,
+            types: restaurant.types,
+            slug: this.generateSlug(restaurant.name),
+          };
+        });
+
         this.currentIndex = 0; // Resetta lo slider all'inizio
       } catch (err) {
         // In caso di errore, salva un messaggio e resetta l'elenco dei ristoranti
@@ -162,6 +173,14 @@ export default {
         this.selectedTypes.splice(index, 1);
       }
       this.fetchRestaurants(); // Aggiorna l'elenco dei ristoranti in base ai tipi selezionati
+    },
+
+    // Genera uno slug a partire dal nome
+    generateSlug(name) {
+      return name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
     },
   },
 };

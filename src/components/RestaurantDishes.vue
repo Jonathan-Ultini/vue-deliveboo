@@ -73,33 +73,51 @@ export default {
   async beforeRouteUpdate(to, from, next) {
     this.loading = true;
     try {
-      const restaurantSlug = to.params.slug;
-      await this.fetchRestaurantDishes(restaurantSlug);
+      await this.fetchRestaurantDishes();
       next();
     } catch (err) {
-      this.error = 'Error during data upload.';
+      console.error("Errore durante l'aggiornamento dei dati:", err);
       next(false);
     }
   },
   methods: {
     async fetchRestaurantDishes() {
+      const restaurantSlug = this.$route.params.slug;
+      this.loading = true;
+      this.error = null;
+
       try {
-        const restaurantSlug = this.$route.params.slug;
-        const response = await axios.get(
-          `http://localhost:8000/api/restaurants/${restaurantSlug}/dishes`
-        );
-        this.dishes = response.data.results;
-        const restaurantResponse = await axios.get(
-          `http://localhost:8000/api/restaurants/${restaurantSlug}`
+        const restaurantResponse = await axios.get("http://localhost:8000/api/restaurants");
+        const restaurants = restaurantResponse.data.results.data;
+
+        const restaurantData = restaurants.find(
+          (restaurant) =>
+            restaurant.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "") === restaurantSlug
         );
 
-        this.restaurant = restaurantResponse.data.results;
+        if (!restaurantData) {
+          this.error = "Il ristorante selezionato non è disponibile.";
+          return;
+        }
+
+        this.restaurant = restaurantData;
+
+        const dishesResponse = await axios.get(
+          `http://localhost:8000/api/restaurants/${restaurantData.id}/dishes`
+        );
+        this.dishes = dishesResponse.data.results;
+
         this.loading = false;
       } catch (err) {
+        this.loading = false;
         if (err.response && err.response.status === 404) {
+          this.error = "La pagina richiesta non è disponibile.";
           this.$router.push({ name: "not-found" });
         } else {
-          this.error = "Errore durante il caricamento dei dati.";
+          this.error = "Si è verificato un problema durante il caricamento. Riprova più tardi.";
         }
       }
     },
