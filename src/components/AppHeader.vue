@@ -40,13 +40,13 @@ export default {
 
 .cart-badge {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 3px;
+  right: 5px;
   background-color: red;
   color: white;
   border-radius: 50%;
-  padding: 5px;
-  font-size: 12px;
+  padding: 4px;
+  font-size: 10px;
   font-weight: bold;
 }
 </style>
