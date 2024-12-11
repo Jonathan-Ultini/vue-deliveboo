@@ -37,9 +37,8 @@
                 <p class="card-price mb-0">
                   <strong>Prezzo:</strong> {{ dish.price }} €
                 </p>
-                <button class="btn btn-primary btn-sm">
-                  <!-- @click="addToCart(dish)" da mettere in button -->
-                  <i class="bi bi-plus"></i> Aggiungi
+                <button class="btn btn-primary btn-sm" @click="handleAddToCart(dish)">
+                  <i class="bi bi-plus"></i> Aggiungi al carrello
                 </button>
               </div>
             </div>
@@ -55,17 +54,11 @@
   </div>
 </template>
 
-
-
-
-
 <script>
 import axios from "axios";
-import CartStore from "@/cart.js";
 
 export default {
   name: "RestaurantDishes",
-  mixins: [CartStore], // Aggiunge i metodi e i dati di cart.js
   data() {
     return {
       dishes: [],
@@ -81,7 +74,6 @@ export default {
     async fetchRestaurantDishes() {
       try {
         const restaurantId = this.$route.params.id;
-        // console.log("ID del ristorante:", restaurantId);
         const response = await axios.get(
           `http://localhost:8000/api/restaurants/${restaurantId}/dishes`
         );
@@ -91,20 +83,45 @@ export default {
         );
 
         this.restaurant = restaurantResponse.data.results;
-        //console.log("Nome del ristorante:", this.restaurant);
         this.loading = false;
       } catch (err) {
         if (err.response && err.response.status === 404) {
-          // Reindirizza alla pagina 404
-          this.$router.push({ name: 'not-found' });
+          this.$router.push({ name: "not-found" });
         } else {
-          this.error = 'Errore durante il caricamento dei dati.';
+          this.error = "Errore durante il caricamento dei dati.";
         }
       }
     },
-    // Metodo per aggiungere un piatto al carrello
-    addToCart(dish) {
-      this.addToCart(dish, this.restaurant.id);
+    handleAddToCart(dish) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || { restaurantId: null, items: [] };
+
+      if (cart.restaurantId && cart.restaurantId !== this.restaurant.id) {
+        const confirmReset = confirm(
+          "Vuoi resettare il carrello per aggiungere piatti da un altro ristorante?"
+        );
+        if (!confirmReset) return;
+
+        cart = { restaurantId: this.restaurant.id, items: [] };
+      }
+
+      cart.restaurantId = this.restaurant.id;
+
+      const existingItem = cart.items.find((item) => item.id === dish.id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.items.push({
+          id: dish.id,
+          name: dish.name,
+          price: dish.price,
+          image: dish.image_url,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("Piatto aggiunto al carrello!");
+      this.$emit("updateCart", cart); // Avvisa il componente padre
     },
   },
 };
