@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../components/HomePage.vue";
 import RestaurantDishes from "../components/RestaurantDishes.vue";
 import NotFound from "../components/NotFound.vue";
+import CheckOut from "../components/CheckOut.vue";
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
   {
     path: '/:catchAll(.*)',
     redirect: '/404',
+  },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: CheckOut,
   },
 ];
 

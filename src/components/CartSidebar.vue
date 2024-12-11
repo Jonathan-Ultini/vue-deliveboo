@@ -60,8 +60,12 @@ export default {
       this.$emit('update-cart', this.cart);
     },
     checkout() {
-      // Logica per il checkout
-      alert('Vai al checkout!');
+      if (!this.cart.items.length) {
+        alert('Il carrello è vuoto. Aggiungi alcuni piatti prima di procedere al checkout.');
+        return;
+      }
+
+      this.$router.push({ name: 'checkout' });
     },
   },
 };
