@@ -40,8 +40,8 @@ export default {
 
 .cart-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: 0px;
+  right: 0px;
   background-color: red;
   color: white;
   border-radius: 50%;
