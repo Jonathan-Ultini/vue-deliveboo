@@ -73,13 +73,13 @@ export default {
   methods: {
     async fetchRestaurantDishes() {
       try {
-        const restaurantId = this.$route.params.id;
+        const restaurantSlug = this.$route.params.slug;
         const response = await axios.get(
-          `http://localhost:8000/api/restaurants/${restaurantId}/dishes`
+          `http://localhost:8000/api/restaurants/${restaurantSlug}/dishes`
         );
         this.dishes = response.data.results;
         const restaurantResponse = await axios.get(
-          `http://localhost:8000/api/restaurants/${restaurantId}`
+          `http://localhost:8000/api/restaurants/${restaurantSlug}`
         );
 
         this.restaurant = restaurantResponse.data.results;
