@@ -1,7 +1,9 @@
 <template>
   <div>
-    <AppHeader :cartCount="cart.items.length" @toggle-cart="toggleCart" />
-    <CartSidebar v-if="showCart" :cart="cart" @update-cart="updateCart" @close="toggleCart" />
+    <AppHeader :cartCount="cartCount" @toggle-cart="toggleCart" />
+
+    <CartSidebar v-if="showCart" :cart="cartStore.cart" @update-cart="updateCart" @close="toggleCart" />
+
     <AppFooter />
   </div>
 </template>
@@ -10,6 +12,8 @@
 import AppHeader from './components/AppHeader.vue';
 import AppFooter from './components/AppFooter.vue';
 import CartSidebar from './components/CartSidebar.vue';
+import { useCartStore } from '@/store/cartStore';
+import { computed } from 'vue';
 
 export default {
   components: {
@@ -17,20 +21,29 @@ export default {
     AppFooter,
     CartSidebar,
   },
-  data() {
-    return {
-      showCart: false,
-      cart: JSON.parse(localStorage.getItem('cart')) || { restaurantId: null, items: [] },
+  setup() {
+    const cartStore = useCartStore();
+
+    const cartCount = computed(() => cartStore.itemCount);
+
+    const showCart = computed(() => cartStore.showCart);
+
+    const toggleCart = () => {
+      cartStore.showCart = !cartStore.showCart;
     };
-  },
-  methods: {
-    toggleCart() {
-      this.showCart = !this.showCart;
-    },
-    updateCart(updatedCart) {
-      this.cart = updatedCart;
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
-    },
+
+    const updateCart = (updatedCart) => {
+      cartStore.cart = updatedCart;
+      cartStore.saveCart();
+    };
+
+    return {
+      cartStore,
+      cartCount,
+      toggleCart,
+      showCart,
+      updateCart,
+    };
   },
 };
 </script>
