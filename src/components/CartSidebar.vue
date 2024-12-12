@@ -31,38 +31,45 @@
 
 
 <script>
+import { useCartStore } from "@/store/cartStore";
+import { computed } from "vue";
+
 export default {
-  props: {
-    cart: {
-      type: Object,
-      required: true,
-    },
-  },
-  computed: {
-    total() {
-      return this.cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
-    },
-  },
-  methods: {
-    updateQuantity(item, delta) {
-      if (item.quantity + delta <= 0) {
-        this.removeItem(item);
-        return;
-      }
-      item.quantity += delta;
-      this.emitCartUpdate();
-    },
-    removeItem(item) {
-      this.cart.items = this.cart.items.filter((i) => i.id !== item.id);
-      this.emitCartUpdate();
-    },
-    emitCartUpdate() {
-      this.$emit('update-cart', this.cart);
-    },
-    checkout() {
+  name: "CartSidebar",
+  setup(props, { emit }) {
+    const cartStore = useCartStore();
+
+    const cart = computed(() => cartStore.cart);
+
+    const total = computed(() =>
+      cartStore.cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)
+    );
+
+    const updateQuantity = (item, delta) => {
+      cartStore.updateQuantity(item.id, delta);
+    };
+
+    const removeItem = (item) => {
+      cartStore.removeFromCart(item.id);
+    };
+
+    const checkout = () => {
       // Logica per il checkout
-      alert('Vai al checkout!');
-    },
+      alert("Vai al checkout!");
+    };
+
+    const closeSidebar = () => {
+      emit("close");
+    };
+
+    return {
+      cart,
+      total,
+      updateQuantity,
+      removeItem,
+      checkout,
+      closeSidebar,
+    };
   },
 };
 </script>
