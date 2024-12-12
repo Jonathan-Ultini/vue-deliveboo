@@ -1,16 +1,16 @@
 <template>
   <div class="restaurant-dishes container">
     <!-- Titolo del Ristorante -->
-    <h1 class="title text-center my-4">Piatti di {{ restaurant.name }}</h1>
+    <h1 class="title text-center my-4"> {{ restaurant.name }}'s dishes</h1>
 
     <!-- Caricamento o errore -->
     <div v-if="loading" class="loading text-center">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Caricamento...</span>
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
     <div v-else-if="error" class="error text-danger text-center">
-      Errore: {{ error }}
+      Error: {{ error }}
     </div>
 
     <!-- Lista dei Piatti -->
@@ -19,10 +19,10 @@
         <div class="row g-0 align-items-center">
           <!-- Immagine del Piatto -->
           <div class="col-md-4">
-            <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
+            <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Dish image"
               class="img-fluid rounded-start" />
             <div v-else class="placeholder-image d-flex align-items-center justify-content-center">
-              Nessuna immagine
+              Image not available.
             </div>
           </div>
 
@@ -35,10 +35,10 @@
               </div>
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="card-price mb-0">
-                  <strong>Prezzo:</strong> {{ dish.price }} €
+                  <strong>Price:</strong> {{ dish.price }} €
                 </p>
                 <button class="btn btn-primary btn-sm" @click="handleAddToCart(dish)">
-                  <i class="bi bi-plus"></i> Aggiungi al carrello
+                  <i class="bi bi-plus"></i> Add to cart
                 </button>
               </div>
             </div>
@@ -49,7 +49,7 @@
 
     <!-- Nessun Piatto -->
     <div v-else-if="!loading && !error" class="no-dishes text-center">
-      <p class="text-danger fs-4 fw-bold">Nessun piatto trovato.</p>
+      <p class="text-danger fs-4 fw-bold">No dish was found.</p>
     </div>
   </div>
 </template>

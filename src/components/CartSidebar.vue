@@ -1,7 +1,7 @@
 <template>
   <div class="cart-sidebar">
     <div class="cart-header">
-      <h3>Carrello</h3>
+      <h3>Your Cart</h3>
       <button class="close-btn" @click="$emit('close')">X</button>
     </div>
     <div v-if="cart.items.length > 0" class="cart-body">
@@ -9,22 +9,22 @@
         <img :src="`http://localhost:8000` + item.image" alt="Piatto" class="item-image" />
         <div class="item-details">
           <h4>{{ item.name }}</h4>
-          <p class="price">Prezzo: {{ item.price }} €</p>
+          <p class="price">Price {{ item.price }} €</p>
           <div class="quantity-control">
             <button class="btn quantity-btn" @click="updateQuantity(item, -1)">-</button>
             <span>{{ item.quantity }}</span>
             <button class="btn quantity-btn" @click="updateQuantity(item, 1)">+</button>
           </div>
         </div>
-        <button class="remove-btn" @click="removeItem(item)">Rimuovi</button>
+        <button class="remove-btn" @click="removeItem(item)">Remove</button>
       </div>
       <div class="cart-footer">
-        <p class="total">Totale: <strong>{{ total }} €</strong></p>
-        <button class="checkout-btn" @click="checkout">Vai al Checkout</button>
+        <p class="total">Total price: <strong>{{ total }} €</strong></p>
+        <button class="checkout-btn" @click="checkout">Go to checkout!</button>
       </div>
     </div>
     <div v-else>
-      <p>Il carrello è vuoto!</p>
+      <p>Your cart is empty!</p>
     </div>
   </div>
 </template>

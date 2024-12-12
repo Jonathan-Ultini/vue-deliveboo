@@ -1,50 +1,50 @@
 <template>
   <div class="container mt-5">
-    <h2>Lista Piatti</h2>
+    <h2>This restaurant's dishes</h2>
 
     <!-- Sezione Form (Aggiungi o Modifica Piatto) -->
     <div class="card p-4 mb-4" v-if="showForm">
-      <h3>{{ editing ? 'Modifica Piatto' : 'Aggiungi Piatto' }}</h3>
+      <h3>{{ editing ? 'Edit dish' : 'Add dish' }}</h3>
       <form @submit.prevent="saveDish">
         <div class="mb-3">
-          <label for="name" class="form-label">Nome</label>
+          <label for="name" class="form-label">Name</label>
           <input type="text" id="name" v-model="form.name" class="form-control" required />
         </div>
         <div class="mb-3">
-          <label for="description" class="form-label">Descrizione</label>
+          <label for="description" class="form-label">Description</label>
           <textarea id="description" v-model="form.description" class="form-control" required></textarea>
         </div>
         <div class="mb-3">
-          <label for="price" class="form-label">Prezzo (€)</label>
+          <label for="price" class="form-label">Price (€)</label>
           <input type="number" step="0.01" id="price" v-model="form.price" class="form-control" required />
         </div>
         <button type="submit" class="btn btn-primary">
-          {{ editing ? 'Salva Modifiche' : 'Aggiungi Piatto' }}
+          {{ editing ? 'Save changes' : 'Add Dish' }}
         </button>
-        <button v-if="editing" @click="resetForm" type="button" class="btn btn-secondary ms-2">Annulla</button>
+        <button v-if="editing" @click="resetForm" type="button" class="btn btn-secondary ms-2">Reset</button>
       </form>
     </div>
 
     <!-- Pulsante per mostrare/nascondere il form -->
     <div class="text-end mb-3">
       <button @click="toggleForm" class="btn btn-success">
-        {{ showForm ? 'Chiudi Form' : 'Aggiungi Piatto' }}
+        {{ showForm ? 'Close Form' : 'Add Plate' }}
       </button>
     </div>
 
     <!-- Messaggio di caricamento -->
     <div v-if="loading" class="text-center">
-      <p>Caricamento...</p>
+      <p>Loading...</p>
     </div>
 
     <!-- Tabella dei piatti -->
     <table class="table mt-3" v-else>
       <thead>
         <tr>
-          <th>Nome</th>
-          <th>Descrizione</th>
-          <th>Prezzo</th>
-          <th>Azioni</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -53,8 +53,8 @@
           <td>{{ dish.description }}</td>
           <td>{{ dish.price }}€</td>
           <td>
-            <button @click="editDish(dish)" class="btn btn-warning btn-sm">Modifica</button>
-            <button @click="deleteDish(dish.id)" class="btn btn-danger btn-sm">Elimina</button>
+            <button @click="editDish(dish)" class="btn btn-warning btn-sm">Edit</button>
+            <button @click="deleteDish(dish.id)" class="btn btn-danger btn-sm">Delete</button>
           </td>
         </tr>
       </tbody>

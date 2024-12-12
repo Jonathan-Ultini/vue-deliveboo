@@ -4,7 +4,7 @@
       <!-- Titolo -->
       <div class="row">
         <div class="col-12 text-center">
-          <h1 class="my-4">Ristoranti per Tipologia</h1>
+          <h1 class="my-4">Choose between many categories!</h1>
         </div>
       </div>
 
@@ -25,7 +25,7 @@
       <div class="row">
         <div v-if="loading" class="col-12 text-center">
           <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Caricamento...</span>
+            <span class="visually-hidden">Loading...</span>
           </div>
         </div>
         <div v-else-if="error" class="col-12 text-center text-danger">
@@ -37,7 +37,7 @@
       <!-- Griglia Ristoranti -->
       <div v-if="restaurants.length > 0" class="row mt-4">
         <div class="col-12">
-          <h2 class="text-center mb-4">Ristoranti</h2>
+          <h2 class="text-center mb-4">Our Best Restaurants</h2>
         </div>
         <div v-for="restaurant in restaurants" :key="restaurant.id" class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
           <router-link :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }"
@@ -46,10 +46,10 @@
               <!-- Immagine del Ristorante -->
               <div class="card-cover">
                 <img v-if="restaurant.dishes && restaurant.dishes[0]"
-                  :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante"
+                  :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Restaurant image"
                   class="card-img-top" />
                 <div v-else class="placeholder-image text-center">
-                  Nessuna immagine
+                 Image not available.
                 </div>
               </div>
               <!-- Dettagli del Ristorante -->
@@ -57,7 +57,7 @@
                 <h5 class="card-title">{{ restaurant.name }}</h5>
                 <p class="card-text">{{ restaurant.address }}</p>
                 <p class="card-text">
-                  <strong>Tipi:</strong>
+                  <strong>Type(s):</strong>
                   <span v-for="type in restaurant.types" :key="type.id">
                     {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
                   </span>
@@ -71,7 +71,7 @@
       <!-- Nessun risultato -->
       <div v-else-if="!loading && !error" class="row">
         <div class="col-12 text-center">
-          <p class="text-danger fs-4 fw-bold">Nessun ristorante trovato con le tipologie richieste.</p>
+          <p class="text-danger fs-4 fw-bold">No restaurants were found using these categories.</p>
         </div>
       </div>
 

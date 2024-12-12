@@ -5,7 +5,7 @@
     <!-- Step 1: Carrello -->
     <div v-if="currentStep === 1">
       <div v-if="cart.items.length > 0">
-        <h3 class="my-4">Carrello</h3>
+        <h3 class="my-4">Cart</h3>
       </div>
       <div class="cart-items">
         <div v-for="item in cart.items" :key="item.id" class="cart-item">
@@ -15,15 +15,15 @@
       <div class="cart-total">
         <h4>Total: {{ totalAmount }} €</h4>
       </div>
-      <button class="btn btn-primary" @click="nextStep">Continua</button>
+      <button class="btn btn-primary" @click="nextStep">Continue</button>
     </div>
 
     <!-- Step 2: Informazioni Ordine -->
     <div v-if="currentStep === 2">
-      <h3>Inserisci le informazioni per l'ordine</h3>
+      <h3>Please, insert your informations for the order.</h3>
       <form @submit.prevent="submitOrderInfo">
         <div class="mb-3">
-          <label for="customer_name" class="form-label">Nome</label>
+          <label for="customer_name" class="form-label">Name</label>
           <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" required />
         </div>
         <div class="mb-3">
@@ -31,20 +31,20 @@
           <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control" required />
         </div>
         <div class="mb-3">
-          <label for="customer_number" class="form-label">Numero telefono</label>
+          <label for="customer_number" class="form-label">Phone Number</label>
           <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control" required />
         </div>
         <div class="mb-3">
-          <label for="customer_address" class="form-label">Indirizzo</label>
+          <label for="customer_address" class="form-label">Address</label>
           <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-primary">Continua</button>
+        <button type="submit" class="btn btn-primary">Continue</button>
       </form>
     </div>
 
     <!-- Step 3: Pagamento -->
     <div v-if="currentStep === 3">
-      <h3>Pagamento</h3>
+      <h3>Payment</h3>
       <button class="btn btn-primary" @click="startPayment" :disabled="loading || !clientToken">
         {{ loading ? 'Processing...' : 'Proceed to Payment' }}
       </button>

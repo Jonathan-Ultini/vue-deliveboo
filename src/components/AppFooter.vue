@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-12 text-center">
-          <h5>Chi siamo</h5>
+          <h5>A project by:</h5>
           <div class="col-12 d-flex flex-wrap justify-content-center mt-3">
             <div class="d-flex flex-column align-items-center me-4">
               <img src="https://avatars.githubusercontent.com/u/173849681?v=4" alt="Dev 1"
