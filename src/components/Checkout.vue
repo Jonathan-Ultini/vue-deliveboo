@@ -96,9 +96,28 @@ export default {
     },
     // TODO: implementare spedizione dati al backend
     async submitOrderInfo() {
-      console.log('Informazioni ordine:', this.orderInfo);
-      this.nextStep();
+      try {
+        const response = await axios.post('http://localhost:8000/api/orders', {
+          restaurant_id: this.cart.restaurantId,
+          customer_name: this.orderInfo.customer_name,
+          customer_email: this.orderInfo.customer_email,
+          customer_number: this.orderInfo.customer_number,
+          customer_address: this.orderInfo.customer_address,
+          total_price: this.calculateTotalPrice(), // Metodo per calcolare il totale
+        });
+
+        if (response.status === 201) {
+          console.log('Ordine salvato con successo:', response.data);
+          this.nextStep(); // Passa al prossimo step
+        } else {
+          alert('Errore durante il salvataggio dell\'ordine. Riprova.');
+        }
+      } catch (error) {
+        console.error('Errore durante l\'invio dell\'ordine:', error);
+        alert('Errore durante il salvataggio dell\'ordine. Riprova.');
+      }
     },
+
     async getClientToken() {
       try {
         const response = await axios.get('http://localhost:8000/api/checkout/token');
@@ -111,6 +130,10 @@ export default {
     // Calcolare il totale del carrello
     calculateTotal() {
       this.totalAmount = this.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+    },
+
+    calculateTotalPrice() {
+      return this.cart.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     },
 
     // Mostrare il Drop-In
