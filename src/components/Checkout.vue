@@ -15,7 +15,7 @@
       <div class="cart-total">
         <h4>Total: {{ totalAmount }} €</h4>
       </div>
-      <button class="btn btn-primary" @click="nextStep">Continua con le informazioni ordine</button>
+      <button class="btn btn-primary" @click="nextStep">Continua</button>
     </div>
 
     <!-- Step 2: Informazioni Ordine -->
@@ -38,7 +38,7 @@
           <label for="customer_address" class="form-label">Indirizzo</label>
           <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-primary">Continua al pagamento</button>
+        <button type="submit" class="btn btn-primary">Continua</button>
       </form>
     </div>
 
@@ -61,54 +61,56 @@
 </template>
 
 <script>
-import dropin from 'braintree-web-drop-in';
-import axios from 'axios';
+import dropin from 'braintree-web-drop-in'; // Importa il modulo Braintree Drop-In per la gestione dei pagamenti.
+import axios from 'axios'; // Importa Axios per le richieste HTTP.
 
 export default {
   data() {
     return {
-      currentStep: 1, // Step iniziale (carrello)
-      clientToken: null,
+      currentStep: 1,
+      clientToken: null, // Token client di Braintree necessario per configurare il Drop-In.
       loading: false,
-      cart: JSON.parse(localStorage.getItem('cart')) || { items: [] },
-      totalAmount: 0, // Totale importo carrello
-      showDropIn: false, // Mostrare il drop-in
+      cart: JSON.parse(localStorage.getItem('cart')) || { items: [] }, // Recupera il carrello dal localStorage o inizializza un carrello vuoto.
+      totalAmount: 0, // Totale del carrello.
+      showDropIn: false, // Indica se mostrare il widget di pagamento Drop-In.
       orderInfo: {
         customer_name: '',
         customer_email: '',
         customer_number: '',
         customer_address: '',
       },
-      dropinInstance: null, // Inizializzare l'istanza del Drop-In
+      dropinInstance: null, // per gestire i pagamenti.
     };
   },
   async mounted() {
+    // Quando il componente è montato, recupera il token client per Braintree e calcola il totale del carrello.
     await this.getClientToken();
     this.calculateTotal();
   },
   methods: {
+    // Metodo per passare al prossimo step del processo.
     nextStep() {
       if (this.currentStep === 1) {
-        this.currentStep = 2; // Passa a step 2 (informazioni ordine)
+        this.currentStep = 2;
       } else if (this.currentStep === 2) {
-        this.currentStep = 3; // Passa a step 3 (pagamento)
+        this.currentStep = 3;
       }
     },
-    // TODO: implementare spedizione dati al backend
+    // Metodo per inviare le informazioni dell'ordine al backend.
     async submitOrderInfo() {
       try {
         const response = await axios.post('http://localhost:8000/api/orders', {
-          restaurant_id: this.cart.restaurantId,
+          restaurant_id: this.cart.restaurantId, // ID del ristorante associato al carrello.
           customer_name: this.orderInfo.customer_name,
           customer_email: this.orderInfo.customer_email,
           customer_number: this.orderInfo.customer_number,
           customer_address: this.orderInfo.customer_address,
-          total_price: this.calculateTotalPrice(), // Metodo per calcolare il totale
+          total_price: this.calculateTotalPrice(), // Calcolo del prezzo totale.
         });
 
         if (response.status === 201) {
           console.log('Ordine salvato con successo:', response.data);
-          this.nextStep(); // Passa al prossimo step
+          this.nextStep();
         } else {
           alert('Errore durante il salvataggio dell\'ordine. Riprova.');
         }
@@ -118,6 +120,7 @@ export default {
       }
     },
 
+    // Recupera il token client per Braintree dal backend.
     async getClientToken() {
       try {
         const response = await axios.get('http://localhost:8000/api/checkout/token');
@@ -127,47 +130,51 @@ export default {
       }
     },
 
-    // Calcolare il totale del carrello
+    // Calcola il totale del carrello sommando i prezzi di ogni articolo moltiplicati per le quantità.
     calculateTotal() {
       this.totalAmount = this.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
     },
 
+    // Calcola e restituisce il totale del carrello come stringa con due decimali.
     calculateTotalPrice() {
       return this.cart.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     },
 
-    // Mostrare il Drop-In
+    // Mostra il widget Drop-In per il pagamento.
     startPayment() {
       this.showDropIn = true;
-      this.setupDropIn();
+      this.setupDropIn(); // Configura il Drop-In.
     },
 
+    // Configura l'istanza Drop-In utilizzando il token client.
     setupDropIn() {
-      if (!this.clientToken) return;
+      if (!this.clientToken) return; // Esce se il token client non è disponibile.
 
       dropin.create(
         {
-          authorization: this.clientToken,
-          container: '#dropin-container',
+          authorization: this.clientToken, // Utilizza il token client per autorizzare il Drop-In.
+          container: '#dropin-container', // ID del contenitore HTML per il widget.
         },
         (error, instance) => {
           if (error) {
             console.error('Errore nella configurazione di Drop-In:', error);
             return;
           }
-          this.dropinInstance = instance;
+          this.dropinInstance = instance; // Salva l'istanza configurata.
         }
       );
     },
 
+    // Gestisce il processo di pagamento.
     async submitPayment() {
       if (!this.dropinInstance) {
         alert('Drop-In non configurato correttamente.');
         return;
       }
 
-      this.loading = true;
+      this.loading = true; // Imposta lo stato di caricamento.
 
+      // Richiede il metodo di pagamento dall'istanza Drop-In.
       this.dropinInstance.requestPaymentMethod(async (error, payload) => {
         if (error) {
           console.error('Errore nella richiesta del metodo di pagamento:', error);
@@ -177,16 +184,18 @@ export default {
 
         try {
           const response = await axios.post('http://localhost:8000/api/checkout/pay', {
-            payment_method_nonce: payload.nonce,
-            amount: this.totalAmount,
+            payment_method_nonce: payload.nonce, // Nonce generato da Braintree.
+            amount: this.totalAmount, // Importo totale del pagamento.
           });
 
           if (response.data.success) {
             alert('Pagamento riuscito! Transaction ID: ' + response.data.transaction_id);
-            this.cart.items = []; // Resetta il carrello dopo il pagamento
+
+            // Svuota il carrello dopo un pagamento riuscito.
+            this.cart.items = [];
             localStorage.setItem('cart', JSON.stringify(this.cart));
 
-            // da dare tempo all'alert di apparire
+            // Naviga alla homepage dopo una breve pausa per mostrare l'alert.
             setTimeout(() => {
               this.$router.push({ name: 'Home' });
             }, 1000);
@@ -196,13 +205,14 @@ export default {
         } catch (error) {
           console.error('Errore durante il pagamento:', error);
         } finally {
-          this.loading = false;
+          this.loading = false; // Reimposta lo stato di caricamento.
         }
       });
     },
   },
 };
 </script>
+
 
 <style scoped>
 .checkout {
