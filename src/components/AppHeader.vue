@@ -15,18 +15,24 @@
 </template>
 
 <script>
+import { useCartStore } from "@/store/cartStore";
+import { computed } from "vue";
+
 export default {
-  name: 'AppHeader',
-  props: {
-    cartCount: {
-      type: Number,
-      default: 0,
-    },
-  },
-  methods: {
-    toggleCart() {
-      this.$emit('toggle-cart');
-    },
+  name: "AppHeader",
+  setup(props, { emit }) {
+    const cartStore = useCartStore();
+
+    const cartCount = computed(() => cartStore.itemCount);
+
+    const toggleCart = () => {
+      emit("toggle-cart");
+    };
+
+    return {
+      cartCount,
+      toggleCart,
+    };
   },
 };
 </script>
