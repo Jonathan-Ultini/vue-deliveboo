@@ -2,32 +2,60 @@
   <div class="checkout">
     <h1 class="text-center">Checkout</h1>
 
-    <!-- Visualizza il carrello -->
-    <div v-if="cart.items.length > 0">
-      <h3 class="my-4">Carrello</h3>
+    <!-- Step 1: Carrello -->
+    <div v-if="currentStep === 1">
+      <div v-if="cart.items.length > 0">
+        <h3 class="my-4">Carrello</h3>
+      </div>
       <div class="cart-items">
         <div v-for="item in cart.items" :key="item.id" class="cart-item">
           <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
         </div>
       </div>
-
-      <!-- Totale del carrello -->
       <div class="cart-total">
         <h4>Total: {{ totalAmount }} €</h4>
       </div>
-
-      <!-- Bottone per procedere al pagamento -->
-      <button class="btn btn-primary" @click="startPayment" :disabled="loading">
-        {{ loading ? 'Processing...' : 'Proceed to Payment' }}
-      </button>
+      <button class="btn btn-primary" @click="nextStep">Continua con le informazioni ordine</button>
     </div>
 
-    <!-- Quando si clicca su "Proceed to Payment", mostra il Drop-In -->
-    <div v-if="showDropIn">
-      <div id="dropin-container"></div>
-      <button class="btn btn-primary" @click="submitPayment" :disabled="loading">
-        {{ loading ? 'Processing...' : 'Pay Now' }}
+    <!-- Step 2: Informazioni Ordine -->
+    <div v-if="currentStep === 2">
+      <h3>Inserisci le informazioni per l'ordine</h3>
+      <form @submit.prevent="submitOrderInfo">
+        <div class="mb-3">
+          <label for="customer_name" class="form-label">Nome</label>
+          <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label for="customer_email" class="form-label">Email</label>
+          <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label for="customer_number" class="form-label">Numero telefono</label>
+          <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control" required />
+        </div>
+        <div class="mb-3">
+          <label for="customer_address" class="form-label">Indirizzo</label>
+          <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Continua al pagamento</button>
+      </form>
+    </div>
+
+    <!-- Step 3: Pagamento -->
+    <div v-if="currentStep === 3">
+      <h3>Pagamento</h3>
+      <button class="btn btn-primary" @click="startPayment" :disabled="loading || !clientToken">
+        {{ loading ? 'Processing...' : 'Proceed to Payment' }}
       </button>
+
+      <!-- Quando si clicca su "Proceed to Payment", mostra il Drop-In -->
+      <div v-if="showDropIn">
+        <div id="dropin-container"></div>
+        <button class="btn btn-primary" @click="submitPayment" :disabled="loading || !dropinInstance">
+          {{ loading ? 'Processing...' : 'Pay Now' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -39,11 +67,19 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      currentStep: 1, // Step iniziale (carrello)
       clientToken: null,
       loading: false,
       cart: JSON.parse(localStorage.getItem('cart')) || { items: [] },
       totalAmount: 0, // Totale importo carrello
       showDropIn: false, // Mostrare il drop-in
+      orderInfo: {
+        customer_name: '',
+        customer_email: '',
+        customer_number: '',
+        customer_address: '',
+      },
+      dropinInstance: null, // Inizializzare l'istanza del Drop-In
     };
   },
   async mounted() {
@@ -51,6 +87,18 @@ export default {
     this.calculateTotal();
   },
   methods: {
+    nextStep() {
+      if (this.currentStep === 1) {
+        this.currentStep = 2; // Passa a step 2 (informazioni ordine)
+      } else if (this.currentStep === 2) {
+        this.currentStep = 3; // Passa a step 3 (pagamento)
+      }
+    },
+    // TODO: implementare spedizione dati al backend
+    async submitOrderInfo() {
+      console.log('Informazioni ordine:', this.orderInfo);
+      this.nextStep();
+    },
     async getClientToken() {
       try {
         const response = await axios.get('http://localhost:8000/api/checkout/token');
@@ -132,7 +180,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .checkout {
