@@ -67,7 +67,12 @@ export const useCartStore = defineStore('cart', {
             this.saveCart();
         },
 
-
+        clearCart() {
+            console.log('Clearing Cart');
+            this.cart = { restaurantId: null, items: [] };
+            console.log('Cart After Clearing:', this.cart);
+            this.saveCart();
+        },
     },
 });
 
