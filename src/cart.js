@@ -23,7 +23,8 @@ export default {
         // Se il carrello appartiene a un altro ristorante, chiedi conferma
         if (
           !confirm(
-            "Hai piatti di un altro ristorante nel carrello. Vuoi svuotarlo per aggiungere questo piatto?"
+
+            "There are items from another restaurant in your cart. Switch your previous items for this dish?"
           )
         ) {
           return;
