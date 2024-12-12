@@ -14,15 +14,24 @@ export const useCartStore = defineStore('cart', {
             for (const item of state.cart.items) {
                 totalSum += item.price * item.quantity;
             }
-            console.log('Computed Total:', totalSum.toFixed(2)); // Log del totale
+            console.log('Computed Total:', totalSum.toFixed(2));
             return totalSum.toFixed(2);
         },
         itemCount: (state) => {
-            console.log('Item Count:', state.cart.items.length); // Log del conteggio
+            console.log('Item Count:', state.cart.items.length);
             return state.cart.items.length;
         },
     }, actions: {
+        loadCart() {
+            const savedCart = localStorage.getItem('cart');
+            this.cart = savedCart ? JSON.parse(savedCart) : { restaurantId: null, items: [] };
+            console.log('Cart Loaded:', this.cart);
+        },
 
+        saveCart() {
+            localStorage.setItem('cart', JSON.stringify(this.cart));
+            console.log('Cart Saved:', this.cart);
+        },
     },
 });
 
