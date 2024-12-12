@@ -57,7 +57,17 @@ export const useCartStore = defineStore('cart', {
             }
 
             this.saveCart();
+        }, removeFromCart(dishId) {
+            console.log('Removing Dish ID:', dishId);
+
+            this.cart.items = this.cart.items.filter((item) => item.id !== dishId);
+            if (!this.cart.items.length) this.cart.restaurantId = null;
+
+            console.log('Cart After Removal:', this.cart);
+            this.saveCart();
         },
+
+
     },
 });
 
