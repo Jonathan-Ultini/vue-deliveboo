@@ -4,6 +4,7 @@ export default {
       cart: this.loadCartFromLocalStorage(),
       restaurantId: this.loadRestaurantIdFromLocalStorage(),
       restaurantName: this.loadRestaurantNameFromLocalStorage(), // Aggiunto per salvare il nome
+      restaurantAddress: this.loadRestaurantAddressFromLocalStorage(),
     };
   },
   methods: {
@@ -23,19 +24,25 @@ export default {
       return localStorage.getItem("restaurantName") || null;
     },
 
+    // Carica l'indirizzo del ristorante dal Local Storage
+    loadRestaurantAddressFromLocalStorage() {
+      return localStorage.getItem("restaurantAddress") || null;
+    },
+
     // Salva il carrello nel Local Storage
     saveCartToLocalStorage() {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
-    // Salva l'ID e il nome del ristorante nel Local Storage
+    // Salva l'ID, il nome e indirizzo del ristorante nel Local Storage
     saveRestaurantToLocalStorage(restaurantId, restaurantName) {
       localStorage.setItem("restaurantId", restaurantId);
       localStorage.setItem("restaurantName", restaurantName);
+      localStorage.setItem("restaurantAddress", restaurantAddress);
     },
 
     // Aggiunge un piatto al carrello
-    addToCart(dish, restaurantId, restaurantName) {
+    addToCart(dish, restaurantId, restaurantName, restaurantAddress) {
       if (this.restaurantId && this.restaurantId !== restaurantId) {
         if (
           !confirm(
@@ -49,6 +56,7 @@ export default {
 
       this.restaurantId = restaurantId;
       this.restaurantName = restaurantName; // Salva il nome del ristorante
+      this.restaurantAddress = restaurantAddress;
 
       const existingDish = this.cart.find((item) => item.id === dish.id);
       if (existingDish) {
@@ -58,7 +66,7 @@ export default {
       }
 
       this.saveCartToLocalStorage();
-      this.saveRestaurantToLocalStorage(restaurantId, restaurantName); // Salva i dati del ristorante
+      this.saveRestaurantToLocalStorage(restaurantId, restaurantName, restaurantAddress); // Salva i dati del ristorante
     },
 
     clearCart() {
@@ -67,6 +75,7 @@ export default {
       this.restaurantName = null;
       localStorage.removeItem("restaurantId");
       localStorage.removeItem("restaurantName");
+      localStorage.removeItem("restaurantAddress");
       this.saveCartToLocalStorage();
     },
   },
