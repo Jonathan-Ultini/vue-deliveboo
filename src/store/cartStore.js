@@ -16,38 +16,39 @@ export const useCartStore = defineStore('cart', {
         sortedItems: (state) => {
             return state.cart.items;
         },
-    }, actions: {
+    },
+    actions: {
         toggleCartSidebar() {
             this.showCart = !this.showCart;
         },
         loadCart() {
             const savedCart = localStorage.getItem('cart');
             this.cart = savedCart ? JSON.parse(savedCart) : { restaurantId: null, items: [] };
-            console.log('Cart Loaded:', this.cart);
         },
 
         saveCart() {
             localStorage.setItem('cart', JSON.stringify(this.cart));
-            console.log('Cart Saved:', this.cart);
         },
-        addToCart(dish, restaurantId) {
-            console.log('Adding Dish:', dish, 'Restaurant ID:', restaurantId);
 
+        addToCart(dish, restaurantId) {
             if (this.cart.restaurantId && this.cart.restaurantId !== restaurantId) {
-                const confirmClear = confirm('Hai piatti di un altro ristorante nel carrello. Vuoi svuotarlo?');
-                if (!confirmClear) {
-                    console.log('Add to Cart Aborted: Different Restaurant');
-                    return;
-                }
+                const confirmClear = confirm('Hai piatti di un altro ristorante nel carrello. Vuoi svuotarlo per aggiungere questo piatto?');
+                if (!confirmClear) return;
                 this.clearCart();
             }
 
             this.cart.restaurantId = restaurantId;
 
-            const existingItem = this.cart.items.find((item) => item.id === dish.id);
-            if (existingItem) {
+            const existingItemIndex = this.cart.items.findIndex((item) => item.id === dish.id);
+
+            if (existingItemIndex !== -1) {
+
+                const existingItem = this.cart.items[existingItemIndex];
                 existingItem.quantity++;
-                console.log('Updated Dish Quantity:', existingItem);
+
+                this.cart.items.splice(existingItemIndex, 1);
+
+                this.cart.items = [existingItem, ...this.cart.items];
             } else {
                 const newItem = { id: dish.id, name: dish.name, price: dish.price, quantity: 1 };
                 this.cart.items.push(newItem);
