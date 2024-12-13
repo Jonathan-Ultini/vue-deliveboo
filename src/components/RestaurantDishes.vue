@@ -95,17 +95,43 @@ export default {
     handleAddToCart(dish) {
       let cart = JSON.parse(localStorage.getItem("cart")) || { restaurantId: null, items: [] };
 
+      // Controllo se il ristorante è diverso
       if (cart.restaurantId && cart.restaurantId !== this.restaurant.id) {
         const confirmReset = confirm(
           "Vuoi resettare il carrello per aggiungere piatti da un altro ristorante?"
         );
         if (!confirmReset) return;
 
+        // Resetta il carrello e recupera i dati del nuovo ristorante
         cart = { restaurantId: this.restaurant.id, items: [] };
+
+        // Recupera i dettagli del ristorante
+        axios
+          .get(`http://localhost:8000/api/restaurants/${this.restaurant.id}`)
+          .then((response) => {
+            const restaurantData = response.data.results;
+
+            // Salva i dettagli del ristorante nel Local Storage
+            localStorage.setItem("restaurantName", restaurantData.name);
+            localStorage.setItem("restaurantAddress", restaurantData.address);
+
+            // Salva l'ID del ristorante
+            cart.restaurantId = this.restaurant.id;
+            this.addDishToCart(cart, dish); // Procedi con l'aggiunta del piatto
+          })
+          .catch((error) => {
+            console.error("Errore nel recupero dei dati del ristorante:", error);
+            alert("Errore nel recupero dei dati del ristorante.");
+          });
+
+        return; // Esci per attendere la chiamata API
       }
 
-      cart.restaurantId = this.restaurant.id;
+      // Se il ristorante è lo stesso, aggiungi direttamente il piatto
+      this.addDishToCart(cart, dish);
+    },
 
+    addDishToCart(cart, dish) {
       const existingItem = cart.items.find((item) => item.id === dish.id);
       if (existingItem) {
         existingItem.quantity += 1;
@@ -119,6 +145,7 @@ export default {
         });
       }
 
+      // Salva il carrello aggiornato nel Local Storage
       localStorage.setItem("cart", JSON.stringify(cart));
       alert("Piatto aggiunto al carrello!");
       this.$emit("updateCart", cart); // Avvisa il componente padre
