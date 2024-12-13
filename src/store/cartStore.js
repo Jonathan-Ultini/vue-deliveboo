@@ -50,13 +50,19 @@ export const useCartStore = defineStore('cart', {
 
                 this.cart.items = [existingItem, ...this.cart.items];
             } else {
-                const newItem = { id: dish.id, name: dish.name, price: dish.price, quantity: 1 };
-                this.cart.items.push(newItem);
-                console.log('New Dish Added:', newItem);
+                const newItem = {
+                    id: dish.id,
+                    name: dish.name,
+                    price: dish.price,
+                    quantity: 1,
+                    timestamp: Date.now(),
+                };
+                this.cart.items = [newItem, ...this.cart.items];
             }
 
             this.saveCart();
-        }, removeFromCart(dishId) {
+        },
+        removeFromCart(dishId) {
             console.log('Removing Dish ID:', dishId);
 
             this.cart.items = this.cart.items.filter((item) => item.id !== dishId);
