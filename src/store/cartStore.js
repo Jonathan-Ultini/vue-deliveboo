@@ -63,20 +63,32 @@ export const useCartStore = defineStore('cart', {
             this.saveCart();
         },
         removeFromCart(dishId) {
-            console.log('Removing Dish ID:', dishId);
-
             this.cart.items = this.cart.items.filter((item) => item.id !== dishId);
             if (!this.cart.items.length) this.cart.restaurantId = null;
-
-            console.log('Cart After Removal:', this.cart);
             this.saveCart();
         },
 
+        updateQuantity(dishId, changeAmount) {
+            const item = this.cart.items.find((item) => item.id === dishId);
+            if (item) {
+                item.quantity += changeAmount;
+                if (item.quantity <= 0) {
+                    this.removeFromCart(dishId);
+                } else {
+                    this.saveCart();
+                }
+            }
+        },
+
         clearCart() {
-            console.log('Clearing Cart');
             this.cart = { restaurantId: null, items: [] };
-            console.log('Cart After Clearing:', this.cart);
             this.saveCart();
+        },
+
+        handleBeforeUnload() {
+            if (this.cart.items.length > 0) {
+                return 'Sei sicuro di abbandonare la sessione? Hai ancora articoli nel carrello.';
+            }
         },
     },
 });
