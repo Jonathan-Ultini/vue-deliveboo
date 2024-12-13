@@ -1,56 +1,85 @@
 <template>
-  <div class="checkout">
-    <h1 class="text-center">Checkout</h1>
+  <div class="checkout container">
+    <h1 class="text-center my-4">Checkout</h1>
 
     <!-- Step 1: Carrello -->
     <div v-if="currentStep === 1">
       <div v-if="cart.items.length > 0">
         <h3 class="my-4">Carrello</h3>
-      </div>
-      <div class="cart-items">
-        <div v-for="item in cart.items" :key="item.id" class="cart-item">
-          <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
+        <div class="cart-items">
+          <div v-for="item in cart.items" :key="item.id" class="cart-item">
+            <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
+          </div>
+        </div>
+        <div class="cart-total">
+          <h4>Total: {{ totalAmount }} €</h4>
         </div>
       </div>
-      <div class="cart-total">
-        <h4>Total: {{ totalAmount }} €</h4>
-      </div>
-      <button class="btn btn-primary" @click="nextStep">Continua</button>
+      <button class="btn btn-primary mt-4" @click="nextStep">Continua</button>
     </div>
 
     <!-- Step 2: Informazioni Ordine -->
     <div v-if="currentStep === 2">
-      <h3>Inserisci le informazioni per l'ordine</h3>
-      <form @submit.prevent="submitOrderInfo">
-        <div class="mb-3">
-          <label for="customer_name" class="form-label">Nome</label>
-          <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" required />
+      <div class="row">
+        <!-- Form -->
+        <div class="col-md-8">
+          <h3>Inserisci le informazioni per l'ordine</h3>
+          <form @submit.prevent="submitOrderInfo">
+            <div class="mb-3">
+              <label for="customer_name" class="form-label">Nome</label>
+              <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label for="customer_email" class="form-label">Email</label>
+              <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control"
+                required />
+            </div>
+            <div class="mb-3">
+              <label for="customer_number" class="form-label">Numero telefono</label>
+              <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control"
+                required />
+            </div>
+            <div class="mb-3">
+              <label for="customer_address" class="form-label">Indirizzo</label>
+              <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control"
+                required />
+            </div>
+            <button type="submit" class="btn btn-primary">Continua</button>
+          </form>
         </div>
-        <div class="mb-3">
-          <label for="customer_email" class="form-label">Email</label>
-          <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control" required />
+
+        <!-- Carrello -->
+        <div class="col-md-4">
+          <h4 class="my-4">Il tuo carrello</h4>
+          <div v-if="cart.items.length > 0">
+            <div class="cart-items">
+              <div v-for="item in cart.items" :key="item.id" class="cart-item">
+                <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
+              </div>
+            </div>
+            <div class="cart-total">
+              <h5>Total: {{ totalAmount }} €</h5>
+            </div>
+          </div>
+          <div v-else>
+            <p>Il carrello è vuoto.</p>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="customer_number" class="form-label">Numero telefono</label>
-          <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control" required />
-        </div>
-        <div class="mb-3">
-          <label for="customer_address" class="form-label">Indirizzo</label>
-          <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control" required />
-        </div>
-        <button type="submit" class="btn btn-primary">Continua</button>
-      </form>
+      </div>
     </div>
 
     <!-- Step 3: Pagamento -->
     <div v-if="currentStep === 3">
       <h3>Pagamento</h3>
+      <div class="mb-4">
+        <h4>Totale da pagare: {{ totalAmount }} €</h4>
+      </div>
       <button class="btn btn-primary" @click="startPayment" :disabled="loading || !clientToken">
         {{ loading ? 'Processing...' : 'Proceed to Payment' }}
       </button>
 
-      <!-- Quando si clicca su "Proceed to Payment", mostra il Drop-In -->
-      <div v-if="showDropIn">
+      <!-- Drop-In Payment -->
+      <div v-if="showDropIn" class="mt-4">
         <div id="dropin-container"></div>
         <button class="btn btn-primary" @click="submitPayment" :disabled="loading || !dropinInstance">
           {{ loading ? 'Processing...' : 'Pay Now' }}
@@ -59,6 +88,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import dropin from 'braintree-web-drop-in'; // Importa il modulo Braintree Drop-In per la gestione dei pagamenti.
