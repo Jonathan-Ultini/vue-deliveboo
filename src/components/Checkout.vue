@@ -5,8 +5,10 @@
     <!-- Step 1: Carrello -->
     <div v-if="currentStep === 1">
       <div v-if="cart.items.length > 0">
-        <h3 class="my-4">Carrello</h3>
+        <h3 class="my-4">Carrello per {{ restaurantName }}</h3>
+        <p><strong>Indirizzo:</strong> {{ restaurantAddress }}</p>
         <div class="cart-items">
+          <p><strong>Piatti:</strong></p>
           <div v-for="item in cart.items" :key="item.id" class="cart-item">
             <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
           </div>
@@ -111,6 +113,8 @@ export default {
       },
       dropinInstance: null, // per gestire i pagamenti.
       showDropIn: false,
+      restaurantName: localStorage.getItem("restaurantName") || null, // Recupera il nome del ristorante
+      restaurantAddress: localStorage.getItem("restaurantAddress") || null,
     };
   },
   computed: {
