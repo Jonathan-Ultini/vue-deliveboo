@@ -4,19 +4,23 @@
       <h3>Carrello</h3>
       <button class="close-btn" @click="$emit('close')">X</button>
     </div>
-    <div v-if="cart.items.length > 0" class="cart-body">
-      <div v-for="item in cart.items" :key="item.id" class="cart-item">
-        <img :src="`http://localhost:8000` + item.image" alt="Piatto" class="item-image" />
+    <div v-if="cartItems.length > 0" class="cart-body">
+      <div v-for="item in cartItems" :key="item.id" class="cart-item">
+        <img :src="item.image" alt="Piatto" class="item-image" />
         <div class="item-details">
           <h4>{{ item.name }}</h4>
           <p class="price">Prezzo: {{ item.price }} €</p>
           <div class="quantity-control">
-            <button class="btn quantity-btn" @click="updateQuantity(item, -1)">-</button>
+            <button class="btn quantity-btn" :disabled="item.quantity <= 1" @click="updateQuantity(item.id, -1)">
+              -
+            </button>
             <span>{{ item.quantity }}</span>
-            <button class="btn quantity-btn" @click="updateQuantity(item, 1)">+</button>
+            <button class="btn quantity-btn" @click="updateQuantity(item.id, 1)">
+              +
+            </button>
           </div>
         </div>
-        <button class="remove-btn" @click="removeItem(item)">Rimuovi</button>
+        <button class="remove-btn" @click="removeItem(item.id)">Rimuovi</button>
       </div>
       <div class="cart-footer">
         <p class="total">Totale: <strong>{{ total }} €</strong></p>
@@ -29,46 +33,37 @@
   </div>
 </template>
 
-
 <script>
 import { useCartStore } from "@/store/cartStore";
 import { computed } from "vue";
 
 export default {
   name: "CartSidebar",
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const cartStore = useCartStore();
 
-    const cart = computed(() => cartStore.cart);
+    const cartItems = computed(() => cartStore.cart.items);
+    const total = computed(() => cartStore.total);
 
-    const total = computed(() =>
-      cartStore.cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)
-    );
-
-    const updateQuantity = (item, delta) => {
-      cartStore.updateQuantity(item.id, delta);
+    const updateQuantity = (dishId, delta) => {
+      cartStore.updateQuantity(dishId, delta);
     };
 
-    const removeItem = (item) => {
-      cartStore.removeFromCart(item.id);
+    const removeItem = (dishId) => {
+      cartStore.removeFromCart(dishId);
     };
 
     const checkout = () => {
       // Logica per il checkout
-      alert("Vai al checkout!");
-    };
-
-    const closeSidebar = () => {
-      emit("close");
+      console.log("navigazione al checkout con i seguenti articoli:", cartStore.cart.items);
     };
 
     return {
-      cart,
+      cartItems,
       total,
       updateQuantity,
       removeItem,
       checkout,
-      closeSidebar,
     };
   },
 };
