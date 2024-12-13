@@ -4,6 +4,7 @@
       <h3>{{ restaurantName ? `Carrello - ${restaurantName}` : 'Carrello' }}</h3>
       <button class="close-btn" @click="$emit('close')">X</button>
     </div>
+    <p>{{ restaurantAddress }}</p>
     <div v-if="cart.items.length > 0" class="cart-body">
       <div v-for="item in cart.items" :key="item.id" class="cart-item">
         <img :src="`http://localhost:8000` + item.image" alt="Piatto" class="item-image" />
@@ -43,6 +44,7 @@ export default {
   data() {
     return {
       restaurantName: localStorage.getItem("restaurantName") || null, // Recupera il nome del ristorante
+      restaurantAddress: localStorage.getItem("restaurantAddress") || null,
     };
   },
   computed: {
