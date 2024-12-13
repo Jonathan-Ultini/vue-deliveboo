@@ -26,7 +26,7 @@ export default {
     const cartStore = useCartStore();
 
     const cartCount = computed(() => cartStore.itemCount);
-    const cartItems = computed(() => cartStore.sortedItems); // Usa il getter ordinato
+    const cartItems = computed(() => cartStore.sortedItems);
     const showCart = computed(() => cartStore.showCart);
 
     const toggleCart = () => {
@@ -43,12 +43,12 @@ export default {
 
     onMounted(() => {
       cartStore.loadCart();
-      cartStore.setupBeforeUnload();
+      /* cartStore.setupBeforeUnload(); */
     });
 
-    onBeforeUnmount(() => {
-      cartStore.teardownBeforeUnload();
-    });
+    /*  onBeforeUnmount(() => {
+       cartStore.teardownBeforeUnload();
+     }); */
 
     return {
       cartCount,

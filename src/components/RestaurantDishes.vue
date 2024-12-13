@@ -52,7 +52,7 @@
 
 <script>
 import axios from "axios";
-import { useCartStore } from "@/store/cartStore"; // Path corretto al nuovo store
+import { useCartStore } from "@/store/cartStore";
 import { ref, computed } from "vue";
 
 export default {
@@ -71,11 +71,9 @@ export default {
       try {
         loading.value = true;
 
-        // Ottieni i dettagli del ristorante
         const restaurantResponse = await axios.get(`${baseUrl}/api/restaurants/${slug}`);
         restaurant.value = restaurantResponse.data.results;
 
-        // Ottieni i piatti del ristorante
         const dishesResponse = await axios.get(`${baseUrl}/api/restaurants/${slug}/dishes`);
         dishes.value = dishesResponse.data.results;
 
