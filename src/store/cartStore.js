@@ -17,6 +17,9 @@ export const useCartStore = defineStore('cart', {
             return state.cart.items;
         },
     }, actions: {
+        toggleCartSidebar() {
+            this.showCart = !this.showCart;
+        },
         loadCart() {
             const savedCart = localStorage.getItem('cart');
             this.cart = savedCart ? JSON.parse(savedCart) : { restaurantId: null, items: [] };
