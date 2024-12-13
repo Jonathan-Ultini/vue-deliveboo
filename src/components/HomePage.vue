@@ -1,15 +1,14 @@
 <template>
   <div class="homepage">
     <div class="container">
-      <!-- Titolo -->
+      <!-- Titolo principale della pagina -->
       <div class="row">
         <div class="col-12 text-center">
           <h1 class="my-4">Ristoranti per Tipologia</h1>
         </div>
       </div>
 
-
-      <!-- Lista tipologie -->
+      <!-- Lista delle tipologie con selezione -->
       <div class="row">
         <div class="col-12">
           <ul class="type-list d-flex flex-wrap justify-content-center">
@@ -21,7 +20,7 @@
         </div>
       </div>
 
-      <!-- Caricamento o errore -->
+      <!-- Stato di caricamento o errore -->
       <div class="row">
         <div v-if="loading" class="col-12 text-center">
           <div class="spinner-border text-primary" role="status">
@@ -29,12 +28,11 @@
           </div>
         </div>
         <div v-else-if="error" class="col-12 text-center text-danger">
-          Errore: {{ error }}
+          {{ error }}
         </div>
       </div>
 
-
-      <!-- Griglia Ristoranti -->
+      <!-- Griglia dei ristoranti -->
       <div v-if="restaurants.length > 0" class="row mt-4">
         <div class="col-12">
           <h2 class="text-center mb-4">Ristoranti</h2>
@@ -43,7 +41,7 @@
           <router-link :to="{ name: 'restaurant-dishes', params: { slug: restaurant.slug } }"
             class="restaurant-card text-decoration-none">
             <div class="card">
-              <!-- Immagine del Ristorante -->
+              <!-- Immagine o segnaposto del ristorante -->
               <div class="card-cover">
                 <img v-if="restaurant.dishes && restaurant.dishes[0]"
                   :src="`http://localhost:8000/storage/` + restaurant.dishes[0].img" alt="Immagine del ristorante"
@@ -52,7 +50,7 @@
                   Nessuna immagine
                 </div>
               </div>
-              <!-- Dettagli del Ristorante -->
+              <!-- Informazioni del ristorante -->
               <div class="card-body">
                 <h5 class="card-title">{{ restaurant.name }}</h5>
                 <p class="card-text">{{ restaurant.address }}</p>
@@ -68,18 +66,15 @@
         </div>
       </div>
 
-      <!-- Nessun risultato -->
+      <!-- Messaggio in caso di nessun risultato -->
       <div v-else-if="!loading && !error" class="row">
         <div class="col-12 text-center">
           <p class="text-danger fs-4 fw-bold">Nessun ristorante trovato con le tipologie richieste.</p>
         </div>
       </div>
-
     </div>
   </div>
 </template>
-
-
 
 <script>
 import axios from "axios";
@@ -88,99 +83,71 @@ export default {
   name: "HomePage",
   data() {
     return {
-      types: [], // array che conterrá tutte le tipologie di ristoranti
-      restaurants: [], // array che conterrá i ristoranti
-      selectedTypes: [], // array degli ID delle tipologie selezionaate
-      loading: true, // stato caricamento dei dati
-      error: null, // messaggio di errore in caso di problemi con le api
-      currentIndex: 0, // Indice dello slider per tracciare il primo elemento
-      visibleCount: 5, // numero massimo di ristoranti visibili nello slider
+      types: [], // Tipologie di ristoranti
+      restaurants: [], // Elenco dei ristoranti
+      selectedTypes: [], // Tipologie selezionate dall'utente
+      loading: false, // Stato di caricamento
+      error: null, // Messaggio di errore
     };
   },
   computed: {
-    // calcola i ristoranti visibili in base all'indice corrente dello slider
     visibleRestaurants() {
-      const start = this.currentIndex; // indice iniziale
-      const end = start + this.visibleCount; //indice finale
-      return this.restaurants.slice(start, end); //ritorna una porzione dell'array
+      // Mostra i primi 5 ristoranti
+      return this.restaurants.slice(0, 5);
     },
   },
   mounted() {
-    // quando il componente viene montato, carica i tipi e i ristoranti
-    this.fetchTypes(); // carica i tipi di ristoranti dall'api
-    this.fetchRestaurants(); // carica ristoranti dall'api
+    // Carica le tipologie e i ristoranti all'avvio del componente
+    this.fetchData();
   },
   methods: {
-    // metodo per ottenere le tipologie di ristoranti dei tipi
-    async fetchTypes() {
+    async fetchData() {
+      this.loading = true;
+      this.error = null;
+
       try {
-        // effettua una richiesta GET all'endpoint dei tipi
-        const response = await axios.get("http://localhost:8000/api/types");
-        this.types = response.data.results; // salva i tipi di ristoranti nell'array
+        // Richiesta API per le tipologie
+        const typesResponse = await axios.get("http://localhost:8000/api/types");
+        this.types = typesResponse.data.results;
+
+        // Richiesta API per i ristoranti
+        const restaurantsResponse = await axios.get("http://localhost:8000/api/restaurants");
+        this.restaurants = restaurantsResponse.data.results.data;
       } catch (err) {
-        // in caso di errore, salva un messaggio di errore
-        this.error = "Impossibile caricare i tipi di ristoranti.";
+        this.error = "Errore nel caricamento dei dati. Riprova più tardi.";
+        console.error(err);
       } finally {
-        // fine del caricamento, indipendentemente dal risultato
         this.loading = false;
       }
     },
-
-
-    // metodo per ottenere i ristoranti filtrati in base ai tipi selezionati
-    async fetchRestaurants() {
-      this.loading = true; // imposta lo stato di caricamento a true
-      try {
-        // costruisce una stringa con gli id delle tipologie selezionate
-        const queryString = this.selectedTypes.join(",");
-        const url =
-          queryString.length > 0
-            ? `http://localhost:8000/api/restaurants?types=${queryString}` // URL con filtro
-            : "http://localhost:8000/api/restaurants"; // URL senza filtro
-        const response = await axios.get(url); // effettua la richiesta GET
-
-
-        this.restaurants = response.data.results.data.map((restaurant) => {
-          return {
-            id: restaurant.id,
-            name: restaurant.name,
-            address: restaurant.address,
-            types: restaurant.types,
-            slug: this.generateSlug(restaurant.name),
-          };
-        });
-
-        this.currentIndex = 0; // Resetta lo slider all'inizio
-      } catch (err) {
-        // In caso di errore, salva un messaggio e resetta l'elenco dei ristoranti
-        this.error = "Impossibile caricare i ristoranti.";
-        this.restaurants = [];
-      } finally {
-        // Fine del caricamento, indipendentemente dal risultato
-        this.loading = false;
-      }
-    },
-
-
-    // Metodo per gestire la selezione/deselezione di una tipologia
     toggleTypeSelection(typeId) {
-      const index = this.selectedTypes.indexOf(typeId); // Cerca l'indice del tipo selezionato
+      // Aggiunge o rimuove una tipologia selezionata
+      const index = this.selectedTypes.indexOf(typeId);
       if (index === -1) {
-        // Se il tipo non è presente, lo aggiunge
         this.selectedTypes.push(typeId);
       } else {
-        // Se il tipo è già presente, lo rimuove
         this.selectedTypes.splice(index, 1);
       }
-      this.fetchRestaurants(); // Aggiorna l'elenco dei ristoranti in base ai tipi selezionati
+      this.fetchFilteredRestaurants();
     },
+    async fetchFilteredRestaurants() {
+      this.loading = true;
+      try {
+        // Costruisce la query per il filtro
+        const queryString = this.selectedTypes.join(",");
+        const response = await axios.get(
+          queryString.length > 0
+            ? `http://localhost:8000/api/restaurants?types=${queryString}`
+            : "http://localhost:8000/api/restaurants"
+        );
 
-    // Genera uno slug a partire dal nome
-    generateSlug(name) {
-      return name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+        this.restaurants = response.data.results.data;
+      } catch (err) {
+        this.error = "Errore nel caricamento dei ristoranti filtrati.";
+        console.error(err);
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
