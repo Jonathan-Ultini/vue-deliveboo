@@ -1,6 +1,5 @@
 <template>
   <div class="restaurant-dishes container">
-    <!-- Titolo del Ristorante -->
     <h1 class="title text-center my-4">Piatti di {{ restaurant.name }}</h1>
 
     <!-- Caricamento o errore -->
@@ -10,23 +9,20 @@
       </div>
     </div>
     <div v-else-if="error" class="error text-danger text-center">
-      Errore: {{ error }}
+      {{ error }}
     </div>
 
     <!-- Lista dei Piatti -->
     <div v-if="dishes.length > 0">
       <div v-for="dish in dishes" :key="dish.id" class="card mb-3">
         <div class="row g-0 align-items-center">
-          <!-- Immagine del Piatto -->
           <div class="col-md-4">
-            <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
+            <img v-if="dish.image_url" :src="dish.image_url" alt="Immagine del piatto"
               class="img-fluid rounded-start" />
             <div v-else class="placeholder-image d-flex align-items-center justify-content-center">
               Nessuna immagine
             </div>
           </div>
-
-          <!-- Informazioni del Piatto -->
           <div class="col-md-8">
             <div class="card-body d-flex flex-column justify-content-between h-100">
               <div>
@@ -37,7 +33,7 @@
                 <p class="card-price mb-0">
                   <strong>Prezzo:</strong> {{ dish.price }} €
                 </p>
-                <button class="btn btn-primary btn-sm" @click="handleAddToCart(dish)">
+                <button class="btn btn-primary btn-sm" @click="addToCart(dish)">
                   <i class="bi bi-plus"></i> Aggiungi al carrello
                 </button>
               </div>
@@ -56,102 +52,70 @@
 
 <script>
 import axios from "axios";
+import { useCartStore } from "@/store/cartStore"; // Path corretto al nuovo store
+import { ref, computed } from "vue";
 
 export default {
   name: "RestaurantDishes",
-  data() {
+  setup() {
+    const cartStore = useCartStore();
+
+    const restaurant = ref({});
+    const dishes = ref([]);
+    const loading = ref(true);
+    const error = ref(null);
+
+    const baseUrl = "http://localhost:8000";
+
+    const fetchRestaurantDishes = async (slug) => {
+      try {
+        loading.value = true;
+
+        // Ottieni i dettagli del ristorante
+        const restaurantResponse = await axios.get(`${baseUrl}/api/restaurants/${slug}`);
+        restaurant.value = restaurantResponse.data.results;
+
+        // Ottieni i piatti del ristorante
+        const dishesResponse = await axios.get(`${baseUrl}/api/restaurants/${slug}/dishes`);
+        dishes.value = dishesResponse.data.results;
+
+        loading.value = false;
+      } catch (err) {
+        loading.value = false;
+        if (err.response?.status === 404) {
+          error.value = "Ristorante non trovato.";
+        } else {
+          error.value = "Errore durante il caricamento dei dati.";
+        }
+      }
+    };
+
+    const addToCart = (dish) => {
+      cartStore.addToCart(dish, restaurant.value.id);
+      alert("Piatto aggiunto al carrello!");
+    };
+
+
+
     return {
-      dishes: [],
-      restaurant: {},
-      loading: true,
-      error: null,
+      restaurant,
+      dishes,
+      loading,
+      error,
+      baseUrl,
+      fetchRestaurantDishes,
+      addToCart,
     };
   },
   async mounted() {
-    this.fetchRestaurantDishes();
+    const slug = this.$route.params.slug;
+    await this.fetchRestaurantDishes(slug);
   },
   async beforeRouteUpdate(to, from, next) {
-    this.loading = true;
-    try {
-      await this.fetchRestaurantDishes();
-      next();
-    } catch (err) {
-      console.error("Errore durante l'aggiornamento dei dati:", err);
-      next(false);
+    if (to.params.slug !== from.params.slug) {
+      await this.fetchRestaurantDishes(to.params.slug);
     }
-  },
-  methods: {
-    async fetchRestaurantDishes() {
-      const restaurantSlug = this.$route.params.slug;
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const restaurantResponse = await axios.get("http://localhost:8000/api/restaurants");
-        const restaurants = restaurantResponse.data.results.data;
-
-        const restaurantData = restaurants.find(
-          (restaurant) =>
-            restaurant.name
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/(^-|-$)/g, "") === restaurantSlug
-        );
-
-        if (!restaurantData) {
-          this.error = "Il ristorante selezionato non è disponibile.";
-          return;
-        }
-
-        this.restaurant = restaurantData;
-
-        const dishesResponse = await axios.get(
-          `http://localhost:8000/api/restaurants/${restaurantData.id}/dishes`
-        );
-        this.dishes = dishesResponse.data.results;
-
-        this.loading = false;
-      } catch (err) {
-        this.loading = false;
-        if (err.response && err.response.status === 404) {
-          this.error = "La pagina richiesta non è disponibile.";
-          this.$router.push({ name: "not-found" });
-        } else {
-          this.error = "Si è verificato un problema durante il caricamento. Riprova più tardi.";
-        }
-      }
-    },
-    handleAddToCart(dish) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || { restaurantId: null, items: [] };
-
-      if (cart.restaurantId && cart.restaurantId !== this.restaurant.id) {
-        const confirmReset = confirm(
-          "Vuoi resettare il carrello per aggiungere piatti da un altro ristorante?"
-        );
-        if (!confirmReset) return;
-
-        cart = { restaurantId: this.restaurant.id, items: [] };
-      }
-
-      cart.restaurantId = this.restaurant.id;
-
-      const existingItem = cart.items.find((item) => item.id === dish.id);
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.items.push({
-          id: dish.id,
-          name: dish.name,
-          price: dish.price,
-          image: dish.image_url,
-          quantity: 1,
-        });
-      }
-
-      localStorage.setItem("cart", JSON.stringify(cart));
-      alert("Piatto aggiunto al carrello!");
-      this.$emit("updateCart", cart); // Avvisa il componente padre
-    },
+    next();
   },
 };
 </script>
