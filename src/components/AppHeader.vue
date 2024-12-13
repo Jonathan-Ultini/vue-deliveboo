@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">DeliveBoo</a>
-        <div class="cart-icon" @click="toggleCart">
+        <div class="cart-icon" @click="toggleCart" title="Apri carrello" aria-label="Apri carrello">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUO7WZsrUlz6XT-6-e07YnghUoF6r-9w_0tQ&s"
             alt="Carrello" class="icon" />
           <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
@@ -20,13 +20,17 @@ import { computed } from "vue";
 
 export default {
   name: "AppHeader",
-  setup(props, { emit }) {
+  setup() {
     const cartStore = useCartStore();
 
     const cartCount = computed(() => cartStore.itemCount);
 
     const toggleCart = () => {
-      emit("toggle-cart");
+      if (cartStore.toggleCartSidebar) {
+        cartStore.toggleCartSidebar();
+      } else {
+        console.error("toggleCartSidebar non definito nello store");
+      }
     };
 
     return {
@@ -42,6 +46,11 @@ export default {
   height: 30px;
   cursor: pointer;
   position: relative;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
 }
 
 .cart-badge {
