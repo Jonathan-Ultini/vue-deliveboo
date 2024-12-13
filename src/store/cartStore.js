@@ -90,7 +90,23 @@ export const useCartStore = defineStore('cart', {
                 return 'Sei sicuro di abbandonare la sessione? Hai ancora articoli nel carrello.';
             }
         },
+        setupBeforeUnload() {
+            window.addEventListener('beforeunload', (event) => {
+                const warningMessage = this.handleBeforeUnload();
+                if (warningMessage) {
+                    event.preventDefault();
+                    event.returnValue = warningMessage;
+                }
+            });
+        },
+
+        teardownBeforeUnload() {
+            window.removeEventListener('beforeunload', this.handleBeforeUnload);
+        },
     },
+
+    persist: true,
+
 });
 
 
