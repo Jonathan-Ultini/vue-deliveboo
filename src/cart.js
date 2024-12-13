@@ -35,14 +35,15 @@ export default {
     },
 
     // Salva l'ID, il nome e indirizzo del ristorante nel Local Storage
-    saveRestaurantToLocalStorage(restaurantId, restaurantName) {
+    saveRestaurantToLocalStorage(restaurantId, restaurantName, restaurantAddress) {
       localStorage.setItem("restaurantId", restaurantId);
       localStorage.setItem("restaurantName", restaurantName);
       localStorage.setItem("restaurantAddress", restaurantAddress);
     },
 
     // Aggiunge un piatto al carrello
-    addToCart(dish, restaurantId, restaurantName, restaurantAddress) {
+    addToCart(dish, restaurantId) {
+      // Se c'è un ristorante diverso nel carrello, conferma con l'utente
       if (this.restaurantId && this.restaurantId !== restaurantId) {
         if (
           !confirm(
@@ -54,10 +55,36 @@ export default {
         this.clearCart();
       }
 
-      this.restaurantId = restaurantId;
-      this.restaurantName = restaurantName; // Salva il nome del ristorante
-      this.restaurantAddress = restaurantAddress;
+      // Recupera i dati del ristorante se non sono già salvati
+      if (!this.restaurantId || this.restaurantId !== restaurantId) {
+        axios
+          .get(`http://localhost:8000/api/restaurants/${restaurantId}`)
+          .then((response) => {
+            const restaurantData = response.data.results;
+            this.restaurantId = restaurantId;
+            this.restaurantName = restaurantData.name;
+            this.restaurantAddress = restaurantData.address;
 
+            // Salva i dati del ristorante nel Local Storage
+            this.saveRestaurantToLocalStorage(
+              restaurantId,
+              restaurantData.name,
+              restaurantData.address
+            );
+
+            // Procedi con l'aggiunta del piatto
+            this.addDishToCart(dish);
+          })
+          .catch((error) => {
+            console.error("Errore nel recupero dei dati del ristorante:", error);
+          });
+      } else {
+        // Se i dati del ristorante sono già salvati, aggiungi il piatto
+        this.addDishToCart(dish);
+      }
+    },
+
+    addDishToCart(dish) {
       const existingDish = this.cart.find((item) => item.id === dish.id);
       if (existingDish) {
         existingDish.quantity++;
@@ -65,8 +92,8 @@ export default {
         this.cart.push({ ...dish, quantity: 1 });
       }
 
+      // Salva il carrello nel Local Storage
       this.saveCartToLocalStorage();
-      this.saveRestaurantToLocalStorage(restaurantId, restaurantName, restaurantAddress); // Salva i dati del ristorante
     },
 
     clearCart() {

@@ -86,9 +86,11 @@ export default {
         const restaurantId = dishResponse.data.restaurant_id;
         const restaurantResponse = await axios.get(`http://localhost:8000/api/restaurants/${restaurantId}`);
         this.restaurantName = restaurantResponse.data.results.name;
+        this.restaurantAddress = restaurantResponse.data.results.address;
 
         // Aggiorna il Local Storage con il nome del ristorante
         localStorage.setItem("restaurantName", this.restaurantName);
+        localStorage.setItem("restaurantAddress", this.restaurantAddress);
       } catch (error) {
         console.error("Errore nel recupero del nome del ristorante", error);
       }
