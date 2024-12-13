@@ -10,17 +10,11 @@ export const useCartStore = defineStore('cart', {
     }),
 
     getters: {
-        total: (state) => {
-            let totalSum = 0;
-            for (const item of state.cart.items) {
-                totalSum += item.price * item.quantity;
-            }
-            console.log('Computed Total:', totalSum.toFixed(2));
-            return totalSum.toFixed(2);
-        },
         itemCount: (state) => {
-            console.log('Item Count:', state.cart.items.length);
-            return state.cart.items.length;
+            return state.cart.items.reduce((count, item) => count + item.quantity, 0);
+        },
+        sortedItems: (state) => {
+            return state.cart.items;
         },
     }, actions: {
         loadCart() {
