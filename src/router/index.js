@@ -30,6 +30,11 @@ const routes = [
     name: 'checkout',
     component: CheckOut,
   },
+  {
+    path: '/paymentsucceeded',
+    name: 'payment-succeeded',
+    component: PaymentSucceded
+  }
 ];
 
 const router = createRouter({
