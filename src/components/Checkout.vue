@@ -74,18 +74,18 @@
       <div class="mb-4">
         <h4>Totale da pagare: {{ totalAmount }} €</h4>
       </div>
-      <button class="btn btn-primary" @click="startPayment" :disabled="loading || !clientToken">
-        {{ loading ? 'Processing...' : 'Proceed to Payment' }}
+
+      <!-- Un unico pulsante -->
+      <button class="btn btn-primary" @click="handlePayment" :disabled="loading || (!clientToken && !dropinInstance)">
+        {{ getPaymentButtonLabel }}
       </button>
 
       <!-- Drop-In Payment -->
       <div v-if="showDropIn" class="mt-4">
         <div id="dropin-container"></div>
-        <button class="btn btn-primary" @click="submitPayment" :disabled="loading || !dropinInstance">
-          {{ loading ? 'Processing...' : 'Pay Now' }}
-        </button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -110,7 +110,14 @@ export default {
         customer_address: '',
       },
       dropinInstance: null, // per gestire i pagamenti.
+      showDropIn: false,
     };
+  },
+  computed: {
+    getPaymentButtonLabel() {
+      if (this.loading) return "Processing...";
+      return this.showDropIn ? "Pay Now" : "Proceed to Payment";
+    },
   },
   async mounted() {
     // Quando il componente è montato, recupera il token client per Braintree e calcola il totale del carrello.
@@ -170,10 +177,55 @@ export default {
       return this.cart.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     },
 
-    // Mostra il widget Drop-In per il pagamento.
-    startPayment() {
-      this.showDropIn = true;
-      this.setupDropIn(); // Configura il Drop-In.
+    async handlePayment() {
+      if (!this.showDropIn) {
+        // Step 1: Mostra il Drop-In
+        this.showDropIn = true;
+        this.startPayment(); // Avvia il processo di pagamento
+      } else {
+        // Step 2: Conferma il pagamento
+        this.submitPayment(); // Invia il pagamento
+      }
+    },
+
+    async startPayment() {
+      // Inizializza il client token e il drop-in (se non già fatto)
+      this.loading = true;
+      try {
+        if (!this.clientToken) {
+          // Richiedi il token dal server
+          const response = await axios.get("/api/payment/token");
+          this.clientToken = response.data.token;
+        }
+
+        // Inizializza il drop-in
+        if (!this.dropinInstance) {
+          const braintree = await import("braintree-web-drop-in");
+          this.dropinInstance = await braintree.create({
+            authorization: this.clientToken,
+            container: "#dropin-container",
+          });
+        }
+      } catch (error) {
+        console.error("Errore nell'avvio del pagamento:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async submitPayment() {
+      // Invia il pagamento
+      this.loading = true;
+      try {
+        const { nonce } = await this.dropinInstance.requestPaymentMethod();
+        // Invio del pagamento al server
+        await axios.post("/api/payment/checkout", { payment_method_nonce: nonce });
+        alert("Pagamento effettuato con successo!");
+      } catch (error) {
+        console.error("Errore nel pagamento:", error);
+        alert("Si è verificato un errore durante il pagamento.");
+      } finally {
+        this.loading = false;
+      }
     },
 
     // Configura l'istanza Drop-In utilizzando il token client.
