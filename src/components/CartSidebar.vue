@@ -1,7 +1,7 @@
 <template>
   <div class="cart-sidebar">
     <div class="cart-header">
-      <h3>Carrello</h3>
+      <h3>{{ restaurantName ? `Carrello - ${restaurantName}` : 'Carrello' }}</h3>
       <button class="close-btn" @click="$emit('close')">X</button>
     </div>
     <div v-if="cart.items.length > 0" class="cart-body">
@@ -30,13 +30,20 @@
 </template>
 
 
+
 <script>
+import axios from 'axios';
 export default {
   props: {
     cart: {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      restaurantName: localStorage.getItem("restaurantName") || null, // Recupera il nome del ristorante
+    };
   },
   computed: {
     total() {
@@ -65,11 +72,29 @@ export default {
         return;
       }
 
+      this.fetchRestaurantName(); // Recupera il nome del ristorante prima di procedere al checkout
       this.$router.push({ name: 'checkout' });
+    },
+    async fetchRestaurantName() {
+      if (!this.cart.items.length) return;
+
+      const dishId = this.cart.items[0].id;
+      try {
+        const dishResponse = await axios.get(`http://localhost:8000/api/dishes/${dishId}`);
+        const restaurantId = dishResponse.data.restaurant_id;
+        const restaurantResponse = await axios.get(`http://localhost:8000/api/restaurants/${restaurantId}`);
+        this.restaurantName = restaurantResponse.data.results.name;
+
+        // Aggiorna il Local Storage con il nome del ristorante
+        localStorage.setItem("restaurantName", this.restaurantName);
+      } catch (error) {
+        console.error("Errore nel recupero del nome del ristorante", error);
+      }
     },
   },
 };
 </script>
+
 
 <style>
 .cart-sidebar {

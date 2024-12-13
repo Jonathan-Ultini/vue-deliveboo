@@ -2,7 +2,8 @@ export default {
   data() {
     return {
       cart: this.loadCartFromLocalStorage(),
-      restaurantId: null, // L'ID del ristorante corrente
+      restaurantId: this.loadRestaurantIdFromLocalStorage(),
+      restaurantName: this.loadRestaurantNameFromLocalStorage(), // Aggiunto per salvare il nome
     };
   },
   methods: {
@@ -12,15 +13,30 @@ export default {
       return cartData ? JSON.parse(cartData) : [];
     },
 
+    // Carica l'ID del ristorante dal Local Storage
+    loadRestaurantIdFromLocalStorage() {
+      return localStorage.getItem("restaurantId") || null;
+    },
+
+    // Carica il nome del ristorante dal Local Storage
+    loadRestaurantNameFromLocalStorage() {
+      return localStorage.getItem("restaurantName") || null;
+    },
+
     // Salva il carrello nel Local Storage
     saveCartToLocalStorage() {
       localStorage.setItem("cart", JSON.stringify(this.cart));
     },
 
+    // Salva l'ID e il nome del ristorante nel Local Storage
+    saveRestaurantToLocalStorage(restaurantId, restaurantName) {
+      localStorage.setItem("restaurantId", restaurantId);
+      localStorage.setItem("restaurantName", restaurantName);
+    },
+
     // Aggiunge un piatto al carrello
-    addToCart(dish, restaurantId) {
+    addToCart(dish, restaurantId, restaurantName) {
       if (this.restaurantId && this.restaurantId !== restaurantId) {
-        // Se il carrello appartiene a un altro ristorante, chiedi conferma
         if (
           !confirm(
             "Hai piatti di un altro ristorante nel carrello. Vuoi svuotarlo per aggiungere questo piatto?"
@@ -28,13 +44,12 @@ export default {
         ) {
           return;
         }
-        // Svuota il carrello se confermato
         this.clearCart();
       }
 
       this.restaurantId = restaurantId;
+      this.restaurantName = restaurantName; // Salva il nome del ristorante
 
-      // Aggiunge il piatto al carrello
       const existingDish = this.cart.find((item) => item.id === dish.id);
       if (existingDish) {
         existingDish.quantity++;
@@ -43,27 +58,16 @@ export default {
       }
 
       this.saveCartToLocalStorage();
+      this.saveRestaurantToLocalStorage(restaurantId, restaurantName); // Salva i dati del ristorante
     },
 
-    // Svuota il carrello
     clearCart() {
       this.cart = [];
       this.restaurantId = null;
+      this.restaurantName = null;
+      localStorage.removeItem("restaurantId");
+      localStorage.removeItem("restaurantName");
       this.saveCartToLocalStorage();
-    },
-
-    // Rimuove un elemento dal carrello
-    removeFromCart(dishId) {
-      this.cart = this.cart.filter((item) => item.id !== dishId);
-      if (this.cart.length === 0) {
-        this.restaurantId = null;
-      }
-      this.saveCartToLocalStorage();
-    },
-
-    // Ottiene il totale del carrello
-    getTotal() {
-      return this.cart.reduce((total, item) => total + item.price * item.quantity, 0);
     },
   },
 };
