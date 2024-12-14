@@ -283,7 +283,7 @@ export default {
 
             // Naviga alla homepage dopo una breve pausa per mostrare l'alert.
             setTimeout(() => {
-              this.$router.push({ name: 'Home' });
+              this.$router.push({ name: 'payment-succeeded' });
             }, 1000);
           } else {
             alert('Errore durante il pagamento: ' + response.data.message);
