@@ -3,6 +3,7 @@ import HomePage from "../components/HomePage.vue";
 import RestaurantDishes from "../components/RestaurantDishes.vue";
 import NotFound from "../components/NotFound.vue";
 import CheckOut from "../components/CheckOut.vue";
+import PaymentSucceeded from "../components/PaymentSucceeded.vue";
 
 const routes = [
   {
@@ -33,7 +34,7 @@ const routes = [
   {
     path: '/paymentsucceeded',
     name: 'payment-succeeded',
-    component: PaymentSucceded
+    component: PaymentSucceeded
   }
 ];
 

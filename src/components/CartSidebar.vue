@@ -96,6 +96,15 @@ export default {
       }
     },
   },
+  removedAllItem() {
+    // Reset del nome e indirizzo del ristorante
+    this.restaurantName = null;
+    this.restaurantAddress = null;
+
+    // Rimuovi i dati dal Local Storage
+    localStorage.removeItem("restaurantName");
+    localStorage.removeItem("restaurantAddress");
+  },
 };
 </script>
 
