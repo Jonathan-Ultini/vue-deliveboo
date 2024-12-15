@@ -142,4 +142,5 @@ export const useCartStore = defineStore('cart', {
       this.restaurantAddress = restaurant.address;
     },
   },
+  persist: true, // Attiva la persistenza
 });
