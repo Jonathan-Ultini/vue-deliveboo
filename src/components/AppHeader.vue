@@ -6,6 +6,7 @@
         <div class="cart-icon" @click="toggleCart">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUO7WZsrUlz6XT-6-e07YnghUoF6r-9w_0tQ&s"
             alt="Carrello" class="icon" />
+          <!-- Usa cartCount dal CartStore -->
           <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
         </div>
       </div>
@@ -15,21 +16,24 @@
 </template>
 
 <script>
+import { useCartStore } from '../stores/cartStore';
+
 export default {
   name: 'AppHeader',
-  props: {
-    cartCount: {
-      type: Number,
-      default: 0,
-    },
-  },
   methods: {
     toggleCart() {
       this.$emit('toggle-cart');
     },
   },
+  computed: {
+    cartCount() {
+      const cartStore = useCartStore(); // Accedi al CartStore
+      return cartStore.totalItem; // Usa il getter `cartCount`
+    },
+  },
 };
 </script>
+
 
 <style>
 .icon {

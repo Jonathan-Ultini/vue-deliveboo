@@ -1,9 +1,7 @@
 <template>
   <div class="restaurant-dishes container">
-    <!-- Titolo del Ristorante -->
     <h1 class="title text-center my-4">Piatti di {{ restaurant.name }}</h1>
 
-    <!-- Caricamento o errore -->
     <div v-if="loading" class="loading text-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Caricamento...</span>
@@ -13,11 +11,9 @@
       Errore: {{ error }}
     </div>
 
-    <!-- Lista dei Piatti -->
     <div v-if="dishes.length > 0">
       <div v-for="dish in dishes" :key="dish.id" class="card mb-3">
         <div class="row g-0 align-items-center">
-          <!-- Immagine del Piatto -->
           <div class="col-md-4">
             <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
               class="img-fluid rounded-start" />
@@ -25,8 +21,6 @@
               Nessuna immagine
             </div>
           </div>
-
-          <!-- Informazioni del Piatto -->
           <div class="col-md-8">
             <div class="card-body d-flex flex-column justify-content-between h-100">
               <div>
@@ -37,7 +31,11 @@
                 <p class="card-price mb-0">
                   <strong>Prezzo:</strong> {{ dish.price }} €
                 </p>
-                <button class="btn btn-primary btn-sm" @click="handleAddToCart(dish)">
+                <!-- Mostra il numero di ordini per questo piatto -->
+                <p v-if="getDishQuantity(dish.id) > 0">
+                  Ordini: {{ getDishQuantity(dish.id) }}
+                </p>
+                <button class="btn btn-primary btn-sm" @click="addDishToCart(dish)">
                   <i class="bi bi-plus"></i> Aggiungi al carrello
                 </button>
               </div>
@@ -47,7 +45,6 @@
       </div>
     </div>
 
-    <!-- Nessun Piatto -->
     <div v-else-if="!loading && !error" class="no-dishes text-center">
       <p class="text-danger fs-4 fw-bold">Nessun piatto trovato.</p>
     </div>
@@ -55,6 +52,7 @@
 </template>
 
 <script>
+import { useCartStore } from "@/stores/cartStore";
 import axios from "axios";
 
 export default {
@@ -67,6 +65,13 @@ export default {
       error: null,
     };
   },
+  computed: {
+    // Usa il getter per ottenere la quantità del piatto nel carrello
+    getDishQuantity() {
+      const cartStore = useCartStore();
+      return (dishId) => cartStore.getDishQuantity(dishId);
+    },
+  },
   async mounted() {
     this.fetchRestaurantDishes();
   },
@@ -78,10 +83,10 @@ export default {
           `http://localhost:8000/api/restaurants/${restaurantId}/dishes`
         );
         this.dishes = response.data.results;
+
         const restaurantResponse = await axios.get(
           `http://localhost:8000/api/restaurants/${restaurantId}`
         );
-
         this.restaurant = restaurantResponse.data.results;
         this.loading = false;
       } catch (err) {
@@ -92,67 +97,15 @@ export default {
         }
       }
     },
-    handleAddToCart(dish) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || { restaurantId: null, items: [] };
-
-      // Controllo se il ristorante è diverso
-      if (cart.restaurantId && cart.restaurantId !== this.restaurant.id) {
-        const confirmReset = confirm(
-          "Vuoi resettare il carrello per aggiungere piatti da un altro ristorante?"
-        );
-        if (!confirmReset) return;
-
-        // Resetta il carrello e recupera i dati del nuovo ristorante
-        cart = { restaurantId: this.restaurant.id, items: [] };
-
-        // Recupera i dettagli del ristorante
-        axios
-          .get(`http://localhost:8000/api/restaurants/${this.restaurant.id}`)
-          .then((response) => {
-            const restaurantData = response.data.results;
-
-            // Salva i dettagli del ristorante nel Local Storage
-            localStorage.setItem("restaurantName", restaurantData.name);
-            localStorage.setItem("restaurantAddress", restaurantData.address);
-
-            // Salva l'ID del ristorante
-            cart.restaurantId = this.restaurant.id;
-            this.addDishToCart(cart, dish); // Procedi con l'aggiunta del piatto
-          })
-          .catch((error) => {
-            console.error("Errore nel recupero dei dati del ristorante:", error);
-            alert("Errore nel recupero dei dati del ristorante.");
-          });
-
-        return; // Esci per attendere la chiamata API
-      }
-
-      // Se il ristorante è lo stesso, aggiungi direttamente il piatto
-      this.addDishToCart(cart, dish);
-    },
-
-    addDishToCart(cart, dish) {
-      const existingItem = cart.items.find((item) => item.id === dish.id);
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.items.push({
-          id: dish.id,
-          name: dish.name,
-          price: dish.price,
-          image: dish.image_url,
-          quantity: 1,
-        });
-      }
-
-      // Salva il carrello aggiornato nel Local Storage
-      localStorage.setItem("cart", JSON.stringify(cart));
-      alert("Piatto aggiunto al carrello!");
-      this.$emit("updateCart", cart); // Avvisa il componente padre
+    addDishToCart(dish) {
+      const cartStore = useCartStore();
+      cartStore.addDish(dish, this.restaurant);
+      // alert("Piatto aggiunto al carrello!");
     },
   },
 };
 </script>
+
 
 <style scoped>
 .restaurant-dishes {
