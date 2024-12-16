@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
 
 export const useCartStore = defineStore('cart', {
   state: () => ({
@@ -77,23 +76,15 @@ export const useCartStore = defineStore('cart', {
       this.restaurantName = null;
       this.restaurantAddress = null;
     },
-    async checkout() {
-      if (!this.items.length) {
-        alert('Il carrello è vuoto. Aggiungi alcuni piatti prima di procedere al checkout.');
-        return;
-      }
-      try {
-        // Recupera il nome e l'indirizzo del ristorante
-        const dishId = this.items[0].id;
-        const dishResponse = await axios.get(`http://localhost:8000/api/dishes/${dishId}`);
-        const restaurantId = dishResponse.data.restaurant_id;
-        const restaurantResponse = await axios.get(`http://localhost:8000/api/restaurants/${restaurantId}`);
-        this.restaurantName = restaurantResponse.data.results.name;
-        this.restaurantAddress = restaurantResponse.data.results.address;
-      } catch (error) {
-        console.error('Errore nel checkout:', error);
-      }
-    },
+    // async checkout() {
+    //   if (!this.items.length) {
+    //     alert('Il carrello è vuoto. Aggiungi alcuni piatti prima di procedere al checkout.');
+    //     return;
+    //   }
+
+    //   // Naviga alla pagina di checkout
+    //   this.$router.push({ name: 'checkout' });
+    // },
 
 
     //=========================================================restaurantdishes=====================

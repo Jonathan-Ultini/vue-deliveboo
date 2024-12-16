@@ -43,7 +43,7 @@ export default {
       restaurantAddress: cartStore.restaurantAddress, // Indirizzo del ristorante
       updateQuantity: cartStore.updateQuantity, // Metodo per aggiornare quantità
       removeItem: cartStore.removeItem, // Metodo per rimuovere articoli
-      checkout: cartStore.checkout, // Metodo di checkout
+      //checkout: cartStore.checkout, // Metodo di checkout
     };
   },
   computed: {
@@ -52,6 +52,20 @@ export default {
       return cartStore.cartTotal; // Usa il getter `cartTotal`
     },
   },
+  methods: {
+    checkout() {
+      const cartStore = useCartStore();
+
+      if (!cartStore.items.length) {
+        alert("Il carrello è vuoto. Aggiungi alcuni piatti prima di procedere al checkout.");
+        return;
+      }
+
+      // Naviga alla pagina di checkout dal componente Vue
+      this.$router.push({ name: "checkout" });
+    }
+
+  }
 };
 </script>
 
