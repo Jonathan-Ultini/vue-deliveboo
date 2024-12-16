@@ -26,25 +26,29 @@
       <div class="row">
         <div class="col-md-8">
           <h3>Inserisci le informazioni per l'ordine</h3>
-          <form @submit.prevent="submitOrderInfo">
+          <form @submit.prevent="saveOrderInfo">
             <div class="mb-3">
               <label for="customer_name" class="form-label">Nome</label>
               <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" required />
+              <div v-if="errors.customer_name" class="text-danger">{{ errors.customer_name }}</div>
             </div>
             <div class="mb-3">
               <label for="customer_email" class="form-label">Email</label>
               <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control"
                 required />
+              <div v-if="errors.customer_email" class="text-danger">{{ errors.customer_email }}</div>
             </div>
             <div class="mb-3">
               <label for="customer_number" class="form-label">Numero telefono</label>
               <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control"
                 required />
+              <div v-if="errors.customer_number" class="text-danger">{{ errors.customer_number }}</div>
             </div>
             <div class="mb-3">
               <label for="customer_address" class="form-label">Indirizzo</label>
               <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control"
                 required />
+              <div v-if="errors.customer_address" class="text-danger">{{ errors.customer_address }}</div>
             </div>
             <button type="submit" class="btn btn-primary">Continua</button>
           </form>
@@ -58,6 +62,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- Step 3: Pagamento -->
     <div v-if="currentStep === 3">
@@ -84,6 +89,8 @@ export default {
   data() {
     return {
       currentStep: 1,
+      savedOrderInfo: {}, // Per salvare temporaneamente i dati dell'ordine
+
       clientToken: null, // Token client di Braintree necessario per configurare il Drop-In.
       loading: false,
       cart: JSON.parse(localStorage.getItem('cart')) || { items: [] }, // Recupera il carrello dal localStorage o inizializza un carrello vuoto.
@@ -94,6 +101,12 @@ export default {
         customer_email: '',
         customer_number: '',
         customer_address: '',
+      },
+      errors: {
+        customer_name: '',
+        customer_email: '',
+        customer_number: '',
+        customer_address: ''
       },
       dropinInstance: null, // per gestire i pagamenti.
       showDropIn: false,
@@ -117,6 +130,62 @@ export default {
     this.calculateTotal();
   },
   methods: {
+    // Salva i dati del form senza inviarli al server.
+    saveOrderInfo() {
+      // Reset errors
+      this.errors = {
+        customer_name: '',
+        customer_email: '',
+        customer_number: '',
+        customer_address: ''
+      };
+
+      // Validazione dei campi
+      let isValid = true;
+
+      // Controllo Nome
+      if (!this.orderInfo.customer_name.trim()) {
+        this.errors.customer_name = 'Il nome è obbligatorio.';
+        isValid = false;
+      }
+
+      // Controllo Email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.orderInfo.customer_email.trim()) {
+        this.errors.customer_email = 'L\'email è obbligatoria.';
+        isValid = false;
+      } else if (!emailRegex.test(this.orderInfo.customer_email)) {
+        this.errors.customer_email = 'Inserisci un\'email valida.';
+        isValid = false;
+      }
+
+      // Controllo Numero Telefono 
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!this.orderInfo.customer_number.trim()) {
+        this.errors.customer_number = 'Il numero di telefono è obbligatorio.';
+        isValid = false;
+      } else if (!phoneRegex.test(this.orderInfo.customer_number)) {
+        this.errors.customer_number = 'Inserisci un numero di telefono valido (10 cifre).';
+        isValid = false;
+      }
+
+      // Controllo Indirizzo
+      if (!this.orderInfo.customer_address.trim()) {
+        this.errors.customer_address = 'L\'indirizzo è obbligatorio.';
+        isValid = false;
+      }
+
+      // Se non ci sono errori, salva i dati e passa al prossimo step
+      if (isValid) {
+        this.savedOrderInfo = { ...this.orderInfo };
+        console.log('Dati ordine salvati temporaneamente:', this.savedOrderInfo);
+
+        // Vai al passaggio successivo
+        this.nextStep();
+      } else {
+        alert("Ci sono degli errori nel modulo. Correggi i campi evidenziati.");
+      }
+    },
     // Metodo per passare al prossimo step del processo.
     nextStep() {
       if (this.currentStep === 1) {
