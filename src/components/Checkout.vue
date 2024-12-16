@@ -60,6 +60,23 @@
       </div>
     </div>
 
+    <div v-if="showErrorModal" class="modal fade show" tabindex="-1" style="display: block;" aria-modal="true"
+      role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Error in the form</h5>
+          </div>
+          <div class="modal-body">
+            <p>There are some errors in the form. Correct the highlighted fields.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" @click="closeErrorModal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- Step 3: Pagamento -->
     <div v-if="currentStep === 3">
@@ -85,6 +102,7 @@ export default {
   },
   data() {
     return {
+      showErrorModal: false,
       currentStep: 1,
       savedOrderInfo: {}, // Per salvare temporaneamente i dati dell'ordine
       cart: { items: [], restaurantId: null }, // Dati del carrello
@@ -127,7 +145,14 @@ export default {
     this.calculateTotal();
   },
   methods: {
-    // Salva i dati del form senza inviarli al server.
+    showErrorModalFunction() {
+      // Mostra il modale
+      this.showErrorModal = true;
+    },
+    closeErrorModal() {
+      // Nasconde il modale
+      this.showErrorModal = false;
+    },
     saveOrderInfo() {
       // Reset errors
       this.errors = {
@@ -180,7 +205,7 @@ export default {
         // Vai al passaggio successivo
         this.nextStep();
       } else {
-        alert("There are some errors in the form. Correct the highlighted fields.");
+        this.showErrorModalFunction(); // Mostra il modale in caso di errore
       }
     },
     // Metodo per passare al prossimo step del processo.
@@ -332,7 +357,7 @@ export default {
         });
 
         if (paymentResponse.data.success) {
-          alert("Payment successful!");
+          // alert("Payment successful!");
 
           // Invia l'ordine con i dettagli del carrello al server
           await this.submitOrder(paymentResponse.data.transaction_id);
@@ -343,9 +368,9 @@ export default {
           this.cart.restaurantId = null;
           this.cart.restaurantName = null;
           localStorage.setItem("cart", JSON.stringify(this.cart));
-          setTimeout(() => {
-            this.$router.push({ name: "payment-succeeded" });
-          }, 1000);
+          // setTimeout(() => {
+          this.$router.push({ name: "payment-succeeded" });
+          // }, 1000);
         } else {
           alert("Payment error: " + paymentResponse.data.message);
         }
