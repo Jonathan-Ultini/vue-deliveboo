@@ -3,10 +3,10 @@
     <div class="success-container">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKpySfjZRZtx5mV8ZNniz9i-4G0iKs3CCzMA&s"
         alt="Successo" class="success-icon" />
-      <h1>Pagamento Avvenuto con Successo!</h1>
-      <p>Grazie per il tuo ordine. Abbiamo ricevuto il pagamento e il tuo ordine è in elaborazione.</p>
-      <p>Riceverai una conferma via email a breve.</p>
-      <router-link to="/" class="btn">Torna alla Homepage</router-link>
+      <h1>Payment Successful!</h1>
+      <p>Thanks for your order. We have received your payment and your order is being processed.</p>
+      <p>You will receive a confirmation via email shortly.</p>
+      <router-link to="/" class="btn">Return to the Homepage</router-link>
     </div>
   </div>
 </template>

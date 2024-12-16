@@ -5,10 +5,10 @@
     <!-- Step 1: Carrello -->
     <div v-if="currentStep === 1">
       <div v-if="cart.items.length > 0">
-        <h3 class="my-4">Carrello per {{ cart.restaurantName }}</h3>
-        <p><strong>Indirizzo:</strong> {{ cart.restaurantAddress }}</p>
+        <h3 class="my-4">Cart for {{ cart.restaurantName }}</h3>
+        <p><strong>Address:</strong> {{ cart.restaurantAddress }}</p>
         <div class="cart-items">
-          <p><strong>Piatti:</strong></p>
+          <p><strong>Dishes:</strong></p>
           <div v-for="item in cart.items" :key="item.id" class="cart-item">
             <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
           </div>
@@ -17,7 +17,7 @@
           <h4>Total: {{ totalCount }} €</h4>
         </div>
       </div>
-      <button class="btn btn-primary mt-4" @click="nextStep">Continua</button>
+      <button class="btn btn-primary mt-4" @click="nextStep">Continue</button>
     </div>
 
     <!-- Step 2: Informazioni Ordine -->
@@ -25,36 +25,33 @@
       <!-- Modulo e riepilogo -->
       <div class="row">
         <div class="col-md-8">
-          <h3>Inserisci le informazioni per l'ordine</h3>
+          <h3>Enter your order information</h3>
           <form @submit.prevent="saveOrderInfo">
             <div class="mb-3">
-              <label for="customer_name" class="form-label">Nome</label>
-              <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" required />
+              <label for="customer_name" class="form-label">Name*</label>
+              <input v-model="orderInfo.customer_name" type="text" id="customer_name" class="form-control" />
               <div v-if="errors.customer_name" class="text-danger">{{ errors.customer_name }}</div>
             </div>
             <div class="mb-3">
-              <label for="customer_email" class="form-label">Email</label>
-              <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control"
-                required />
+              <label for="customer_email" class="form-label">Email*</label>
+              <input v-model="orderInfo.customer_email" type="email" id="customer_email" class="form-control" />
               <div v-if="errors.customer_email" class="text-danger">{{ errors.customer_email }}</div>
             </div>
             <div class="mb-3">
-              <label for="customer_number" class="form-label">Numero telefono</label>
-              <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control"
-                required />
+              <label for="customer_number" class="form-label">Telephone number*</label>
+              <input v-model="orderInfo.customer_number" type="text" id="customer_number" class="form-control" />
               <div v-if="errors.customer_number" class="text-danger">{{ errors.customer_number }}</div>
             </div>
             <div class="mb-3">
-              <label for="customer_address" class="form-label">Indirizzo</label>
-              <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control"
-                required />
+              <label for="customer_address" class="form-label">Address*</label>
+              <input v-model="orderInfo.customer_address" type="text" id="customer_address" class="form-control" />
               <div v-if="errors.customer_address" class="text-danger">{{ errors.customer_address }}</div>
             </div>
-            <button type="submit" class="btn btn-primary">Continua</button>
+            <button type="submit" class="btn btn-primary">Continue</button>
           </form>
         </div>
         <div class="col-md-4">
-          <h4 class="my-4">Riepilogo carrello</h4>
+          <h4 class="my-4">Cart summary</h4>
           <div v-for="item in cart.items" :key="item.id">
             <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
           </div>
@@ -66,8 +63,8 @@
 
     <!-- Step 3: Pagamento -->
     <div v-if="currentStep === 3">
-      <h3>Pagamento</h3>
-      <h4>Totale: {{ totalCount }} €</h4>
+      <h3>Payment</h3>
+      <h4>Total: {{ totalCount }} €</h4>
       <button class="btn btn-primary" @click="handlePayment" :disabled="loading || (!clientToken && !dropinInstance)">
         {{ getPaymentButtonLabel }}
       </button>
@@ -145,45 +142,45 @@ export default {
 
       // Controllo Nome
       if (!this.orderInfo.customer_name.trim()) {
-        this.errors.customer_name = 'Il nome è obbligatorio.';
+        this.errors.customer_name = 'The name is mandatory.';
         isValid = false;
       }
 
       // Controllo Email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.orderInfo.customer_email.trim()) {
-        this.errors.customer_email = 'L\'email è obbligatoria.';
+        this.errors.customer_email = 'Email is required.';
         isValid = false;
       } else if (!emailRegex.test(this.orderInfo.customer_email)) {
-        this.errors.customer_email = 'Inserisci un\'email valida.';
+        this.errors.customer_email = 'Please enter a valid email.';
         isValid = false;
       }
 
       // Controllo Numero Telefono 
       const phoneRegex = /^[0-9]{10}$/;
       if (!this.orderInfo.customer_number.trim()) {
-        this.errors.customer_number = 'Il numero di telefono è obbligatorio.';
+        this.errors.customer_number = 'The telephone number is mandatory.';
         isValid = false;
       } else if (!phoneRegex.test(this.orderInfo.customer_number)) {
-        this.errors.customer_number = 'Inserisci un numero di telefono valido (10 cifre).';
+        this.errors.customer_number = 'Please enter a valid phone number (10 digits).';
         isValid = false;
       }
 
       // Controllo Indirizzo
       if (!this.orderInfo.customer_address.trim()) {
-        this.errors.customer_address = 'L\'indirizzo è obbligatorio.';
+        this.errors.customer_address = 'The address is required.';
         isValid = false;
       }
 
       // Se non ci sono errori, salva i dati e passa al prossimo step
       if (isValid) {
         this.savedOrderInfo = { ...this.orderInfo };
-        console.log('Dati ordine salvati temporaneamente:', this.savedOrderInfo);
+        // console.log('Dati ordine salvati temporaneamente:', this.savedOrderInfo);
 
         // Vai al passaggio successivo
         this.nextStep();
       } else {
-        alert("Ci sono degli errori nel modulo. Correggi i campi evidenziati.");
+        alert("There are some errors in the form. Correct the highlighted fields.");
       }
     },
     // Metodo per passare al prossimo step del processo.
@@ -207,14 +204,14 @@ export default {
         });
 
         if (response.status === 201) {
-          console.log('Ordine salvato con successo:', response.data);
+          console.log('Order saved successfully:', response.data);
           this.nextStep();
         } else {
-          alert('Errore durante il salvataggio dell\'ordine. Riprova.');
+          alert('Error saving the order. Try again.');
         }
       } catch (error) {
-        console.error('Errore durante l\'invio dell\'ordine:', error);
-        alert('Errore durante il salvataggio dell\'ordine. Riprova.');
+        console.error('Error sending order:', error);
+        alert('Error saving the order. Try again.');
       }
     },
 
@@ -224,7 +221,7 @@ export default {
         const response = await axios.get('http://localhost:8000/api/checkout/token');
         this.clientToken = response.data.clientToken;
       } catch (error) {
-        console.error('Errore nel recupero del token:', error);
+        console.error('Error retrieving token:', error);
       }
     },
 
@@ -268,7 +265,7 @@ export default {
           });
         }
       } catch (error) {
-        console.error("Errore nell'avvio del pagamento:", error);
+        console.error("Error initiating payment:", error);
       } finally {
         this.loading = false;
       }
@@ -307,7 +304,7 @@ export default {
         },
         (error, instance) => {
           if (error) {
-            console.error('Errore nella configurazione di Drop-In:', error);
+            console.error('Drop-In configuration error:', error);
             return;
           }
           this.dropinInstance = instance; // Salva l'istanza configurata.
@@ -318,7 +315,7 @@ export default {
     // Gestisce il processo di pagamento.
     async submitPayment() {
       if (!this.dropinInstance) {
-        alert("Drop-In non configurato correttamente.");
+        alert("Drop-In not configured correctly.");
         return;
       }
 
@@ -335,7 +332,7 @@ export default {
         });
 
         if (paymentResponse.data.success) {
-          alert("Pagamento riuscito!");
+          alert("Payment successful!");
 
           // Invia l'ordine con i dettagli del carrello al server
           await this.submitOrder(paymentResponse.data.transaction_id);
@@ -350,11 +347,11 @@ export default {
             this.$router.push({ name: "payment-succeeded" });
           }, 1000);
         } else {
-          alert("Errore nel pagamento: " + paymentResponse.data.message);
+          alert("Payment error: " + paymentResponse.data.message);
         }
       } catch (error) {
-        console.error("Errore durante il pagamento:", error);
-        alert("Si è verificato un errore durante il pagamento.");
+        console.error("Error during payment:", error);
+        alert("An error occurred during payment.");
       } finally {
         this.loading = false; // Stato di caricamento disattivato
       }
@@ -379,12 +376,12 @@ export default {
         });
 
         if (response.status === 201) {
-          console.log("Ordine registrato con successo:", response.data);
+          console.log("Order registered successfully:", response.data);
         } else {
-          console.error("Errore durante la registrazione dell'ordine.");
+          console.error("Error registering the order.");
         }
       } catch (error) {
-        console.error("Errore nell'invio dell'ordine:", error);
+        console.error("Error sending the order:", error);
       }
     },
   },

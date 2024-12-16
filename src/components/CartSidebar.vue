@@ -1,7 +1,7 @@
 <template>
   <div class="cart-sidebar">
     <div class="cart-header">
-      <h3>{{ restaurantName ? `Carrello - ${restaurantName}` : 'Carrello' }}</h3>
+      <h3>{{ restaurantName ? `Shopping cart - ${restaurantName}` : 'Shopping cart' }}</h3>
       <button class="close-btn" @click="$emit('close')">X</button>
     </div>
     <p>{{ restaurantAddress }}</p>
@@ -10,22 +10,22 @@
         <img :src="`http://localhost:8000` + item.image" alt="Piatto" class="item-image" />
         <div class="item-details">
           <h4>{{ item.name }}</h4>
-          <p class="price">Prezzo: {{ item.price }} €</p>
+          <p class="price">Price: {{ item.price }} €</p>
           <div class="quantity-control">
             <button class="btn quantity-btn" @click="updateQuantity(item, -1)">-</button>
             <span>{{ item.quantity }}</span>
             <button class="btn quantity-btn" @click="updateQuantity(item, 1)">+</button>
           </div>
         </div>
-        <button class="remove-btn" @click="removeItem(item)">Rimuovi</button>
+        <button class="remove-btn" @click="removeItem(item)">Remove</button>
       </div>
       <div class="cart-footer">
-        <p class="total">Totale: <strong>{{ totalCount }} €</strong></p>
-        <button class="checkout-btn" @click="checkout">Vai al Checkout</button>
+        <p class="total">Total: <strong>{{ totalCount }} €</strong></p>
+        <button class="checkout-btn" @click="checkout">Go to Checkout</button>
       </div>
     </div>
     <div v-else>
-      <p>Il carrello è vuoto!</p>
+      <p>The cart is empty!</p>
     </div>
   </div>
 </template>
@@ -57,7 +57,7 @@ export default {
       const cartStore = useCartStore();
 
       if (!cartStore.items.length) {
-        alert("Il carrello è vuoto. Aggiungi alcuni piatti prima di procedere al checkout.");
+        alert("Your cart is empty. Add some dishes before proceeding to checkout.");
         return;
       }
 

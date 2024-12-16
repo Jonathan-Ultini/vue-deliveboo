@@ -1,14 +1,14 @@
 <template>
   <div class="restaurant-dishes container">
-    <h1 class="title text-center my-4">Piatti di {{ restaurant.name }}</h1>
+    <h1 class="title text-center my-4">Dishes of {{ restaurant.name }}</h1>
 
     <div v-if="loading" class="loading text-center">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Caricamento...</span>
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
     <div v-else-if="error" class="error text-danger text-center">
-      Errore: {{ error }}
+      Error: {{ error }}
     </div>
 
     <div v-else class="row">
@@ -18,10 +18,10 @@
           <div v-for="dish in dishes" :key="dish.id" class="card mb-3">
             <div class="row g-0 align-items-center">
               <div class="col-md-4">
-                <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Immagine del piatto"
+                <img v-if="dish.image_url" :src="`http://localhost:8000` + dish.image_url" alt="Dishes Image"
                   class="img-fluid rounded-start" />
                 <div v-else class="placeholder-image d-flex align-items-center justify-content-center">
-                  Nessuna immagine
+                  No Image
                 </div>
               </div>
               <div class="col-md-8">
@@ -32,14 +32,14 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="card-price mb-0">
-                      <strong>Prezzo:</strong> {{ dish.price }} €
+                      <strong>Price:</strong> {{ dish.price }} €
                     </p>
                     <!-- Mostra il numero di ordini per questo piatto -->
                     <p v-if="getDishQuantity(dish.id) > 0">
-                      Ordini: {{ getDishQuantity(dish.id) }}
+                      Orders: {{ getDishQuantity(dish.id) }}
                     </p>
                     <button class="btn btn-primary btn-sm" @click="addDishToCart(dish)">
-                      <i class="bi bi-plus"></i> Aggiungi al carrello
+                      <i class="bi bi-plus"></i> Add to cart
                     </button>
                   </div>
                 </div>
@@ -48,14 +48,14 @@
           </div>
         </div>
         <div v-else class="no-dishes text-center">
-          <p class="text-danger fs-4 fw-bold">Nessun piatto trovato.</p>
+          <p class="text-danger fs-4 fw-bold">No dishes found.</p>
         </div>
       </div>
 
       <!-- Colonna per il carrello -->
       <div class="col-md-4">
         <div class="">
-          <h2 class="text-center">Carrello</h2>
+          <h2 class="text-center">Cart</h2>
           <div v-if="cartItems.length > 0">
             <ul class="list-group mb-3">
               <li v-for="item in cartItems" :key="item.id"
@@ -67,12 +67,12 @@
               </li>
             </ul>
             <div class="text-center">
-              <p class="fw-bold">Totale: {{ cartTotal }} €</p>
+              <p class="fw-bold">Total: {{ cartTotal }} €</p>
               <button class="btn btn-success btn-sm" @click="checkout">Checkout</button>
             </div>
           </div>
           <div v-else>
-            <p class="text-center text-muted">Il carrello è vuoto.</p>
+            <p class="text-center text-muted">Your cart is empty.</p>
           </div>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default {
         if (err.response && err.response.status === 404) {
           this.$router.push({ name: "not-found" }); // Reindirizza a una pagina di errore se il ristorante non esiste
         } else {
-          this.error = "Errore durante il caricamento dei dati.";
+          this.error = "Error loading data.";
         }
       }
     },
@@ -146,7 +146,7 @@ export default {
       const cartStore = useCartStore();
 
       if (!cartStore.items.length) {
-        alert("Il carrello è vuoto. Aggiungi alcuni piatti prima di procedere al checkout.");
+        alert("Your cart is empty. Add some dishes before proceeding to checkout.");
         return;
       }
 
