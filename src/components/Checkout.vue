@@ -5,8 +5,8 @@
     <!-- Step 1: Carrello -->
     <div v-if="currentStep === 1">
       <div v-if="cart.items.length > 0">
-        <h3 class="my-4">Carrello per {{ restaurantName }}</h3>
-        <p><strong>Indirizzo:</strong> {{ restaurantAddress }}</p>
+        <h3 class="my-4">Carrello per {{ cart.restaurantName }}</h3>
+        <p><strong>Indirizzo:</strong> {{ cart.restaurantAddress }}</p>
         <div class="cart-items">
           <p><strong>Piatti:</strong></p>
           <div v-for="item in cart.items" :key="item.id" class="cart-item">
@@ -14,7 +14,7 @@
           </div>
         </div>
         <div class="cart-total">
-          <h4>Total: {{ totalAmount }} €</h4>
+          <h4>Total: {{ totalCount }} €</h4>
         </div>
       </div>
       <button class="btn btn-primary mt-4" @click="nextStep">Continua</button>
@@ -22,8 +22,8 @@
 
     <!-- Step 2: Informazioni Ordine -->
     <div v-if="currentStep === 2">
+      <!-- Modulo e riepilogo -->
       <div class="row">
-        <!-- Form -->
         <div class="col-md-8">
           <h3>Inserisci le informazioni per l'ordine</h3>
           <form @submit.prevent="submitOrderInfo">
@@ -49,23 +49,12 @@
             <button type="submit" class="btn btn-primary">Continua</button>
           </form>
         </div>
-
-        <!-- Carrello -->
         <div class="col-md-4">
-          <h4 class="my-4">Il tuo carrello</h4>
-          <div v-if="cart.items.length > 0">
-            <div class="cart-items">
-              <div v-for="item in cart.items" :key="item.id" class="cart-item">
-                <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
-              </div>
-            </div>
-            <div class="cart-total">
-              <h5>Total: {{ totalAmount }} €</h5>
-            </div>
+          <h4 class="my-4">Riepilogo carrello</h4>
+          <div v-for="item in cart.items" :key="item.id">
+            <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
           </div>
-          <div v-else>
-            <p>Il carrello è vuoto.</p>
-          </div>
+          <h5>Total: {{ totalCount }} €</h5>
         </div>
       </div>
     </div>
@@ -73,30 +62,25 @@
     <!-- Step 3: Pagamento -->
     <div v-if="currentStep === 3">
       <h3>Pagamento</h3>
-      <div class="mb-4">
-        <h4>Totale da pagare: {{ totalAmount }} €</h4>
-      </div>
-
-      <!-- Un unico pulsante -->
+      <h4>Totale: {{ totalCount }} €</h4>
       <button class="btn btn-primary" @click="handlePayment" :disabled="loading || (!clientToken && !dropinInstance)">
         {{ getPaymentButtonLabel }}
       </button>
-
-      <!-- Drop-In Payment -->
-      <div v-if="showDropIn" class="mt-4">
-        <div id="dropin-container"></div>
-      </div>
+      <div id="dropin-container" v-if="showDropIn"></div>
     </div>
-
   </div>
 </template>
-
 
 <script>
 import dropin from 'braintree-web-drop-in'; // Importa il modulo Braintree Drop-In per la gestione dei pagamenti.
 import axios from 'axios'; // Importa Axios per le richieste HTTP.
+import { useCartStore } from "@/stores/cartStore";
 
 export default {
+  setup() {
+    const cart = useCartStore();
+    return { cart };
+  },
   data() {
     return {
       currentStep: 1,
@@ -121,6 +105,10 @@ export default {
     getPaymentButtonLabel() {
       if (this.loading) return "Processing...";
       return this.showDropIn ? "Pay Now" : "Proceed to Payment";
+    },
+    totalCount() {
+      const cartStore = useCartStore(); // Accedi al CartStore
+      return cartStore.cartTotal; // Usa il getter `cartTotal`
     },
   },
   async mounted() {
