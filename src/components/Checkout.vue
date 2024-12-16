@@ -90,7 +90,7 @@ export default {
     return {
       currentStep: 1,
       savedOrderInfo: {}, // Per salvare temporaneamente i dati dell'ordine
-
+      cart: { items: [], restaurantId: null }, // Dati del carrello
       clientToken: null, // Token client di Braintree necessario per configurare il Drop-In.
       loading: false,
       cart: JSON.parse(localStorage.getItem('cart')) || { items: [] }, // Recupera il carrello dal localStorage o inizializza un carrello vuoto.
@@ -273,21 +273,28 @@ export default {
         this.loading = false;
       }
     },
-    async submitPayment() {
-      // Invia il pagamento
-      this.loading = true;
-      try {
-        const { nonce } = await this.dropinInstance.requestPaymentMethod();
-        // Invio del pagamento al server
-        await axios.post("/api/payment/checkout", { payment_method_nonce: nonce });
-        alert("Pagamento effettuato con successo!");
-      } catch (error) {
-        console.error("Errore nel pagamento:", error);
-        alert("Si è verificato un errore durante il pagamento.");
-      } finally {
-        this.loading = false;
-      }
-    },
+
+
+    // async submitPayment() {
+    //   if (!this.dropinInstance) {
+    //     alert("Drop-In non configurato correttamente.");
+    //     return;
+    //   }
+    //   // Invia il pagamento
+    //   this.loading = true;
+    //   try {
+    //     // Richiedi il nonce dal widget Drop-In
+    //     const { nonce } = await this.dropinInstance.requestPaymentMethod();
+    //     // Invio del pagamento al server
+    //     await axios.post("http://localhost:8000/api/payment/checkout/pay", { payment_method_nonce: nonce });
+    //     alert("Pagamento effettuato con successo!");
+    //   } catch (error) {
+    //     console.error("Errore nel pagamento:", error);
+    //     alert("Si è verificato un errore durante il pagamento.");
+    //   } finally {
+    //     this.loading = false;
+    //   }
+    // },
 
     // Configura l'istanza Drop-In utilizzando il token client.
     setupDropIn() {
@@ -311,46 +318,74 @@ export default {
     // Gestisce il processo di pagamento.
     async submitPayment() {
       if (!this.dropinInstance) {
-        alert('Drop-In non configurato correttamente.');
+        alert("Drop-In non configurato correttamente.");
         return;
       }
 
-      this.loading = true; // Imposta lo stato di caricamento.
+      this.loading = true; // Stato di caricamento attivo
 
-      // Richiede il metodo di pagamento dall'istanza Drop-In.
-      this.dropinInstance.requestPaymentMethod(async (error, payload) => {
-        if (error) {
-          console.error('Errore nella richiesta del metodo di pagamento:', error);
-          this.loading = false;
-          return;
+      try {
+        // Richiedi il nonce dal widget Drop-In
+        const { nonce } = await this.dropinInstance.requestPaymentMethod();
+
+        // Invia il pagamento al backend
+        const paymentResponse = await axios.post("http://localhost:8000/api/checkout/pay", {
+          payment_method_nonce: nonce, // Nonce generato da Braintree
+          amount: this.totalCount,
+        });
+
+        if (paymentResponse.data.success) {
+          alert("Pagamento riuscito!");
+
+          // Invia l'ordine con i dettagli del carrello al server
+          await this.submitOrder(paymentResponse.data.transaction_id);
+
+          // Svuota il carrello e reindirizza
+          this.cart.items = [];
+          this.cart.restaurantAddress = null;
+          this.cart.restaurantId = null;
+          this.cart.restaurantName = null;
+          localStorage.setItem("cart", JSON.stringify(this.cart));
+          setTimeout(() => {
+            this.$router.push({ name: "payment-succeeded" });
+          }, 1000);
+        } else {
+          alert("Errore nel pagamento: " + paymentResponse.data.message);
         }
+      } catch (error) {
+        console.error("Errore durante il pagamento:", error);
+        alert("Si è verificato un errore durante il pagamento.");
+      } finally {
+        this.loading = false; // Stato di caricamento disattivato
+      }
+    },
 
-        try {
-          const response = await axios.post('http://localhost:8000/api/checkout/pay', {
-            payment_method_nonce: payload.nonce, // Nonce generato da Braintree.
-            amount: this.totalAmount, // Importo totale del pagamento.
-          });
+    async submitOrder(transactionId) {
+      // console.log('Cart:', this.cart);
+      // console.log('Restaurant ID:', this.cart.restaurantId);
+      // console.log('Cart Items:', this.cart.items);
+      // console.log('Saved Order Info:', this.savedOrderInfo);
+      // console.log('Total Amount:', this.cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0));
 
-          if (response.data.success) {
-            alert('Pagamento riuscito! Transaction ID: ' + response.data.transaction_id);
 
-            // Svuota il carrello dopo un pagamento riuscito.
-            this.cart.items = [];
-            localStorage.setItem('cart', JSON.stringify(this.cart));
+      try {
+        // Invia i dettagli dell'ordine, incluso il contenuto del carrello
+        const response = await axios.post("http://localhost:8000/api/orders", {
+          ...this.savedOrderInfo, // Informazioni aggiuntive dell'ordine
+          restaurant_id: this.cart.restaurantId,
+          total_price: this.cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0), // Calcola il totale
+          transaction_id: transactionId, // ID della transazione di pagamento
+          items: this.cart.items, // Dati del carrello (piatti e quantità)
+        });
 
-            // Naviga alla homepage dopo una breve pausa per mostrare l'alert.
-            setTimeout(() => {
-              this.$router.push({ name: 'payment-succeeded' });
-            }, 1000);
-          } else {
-            alert('Errore durante il pagamento: ' + response.data.message);
-          }
-        } catch (error) {
-          console.error('Errore durante il pagamento:', error);
-        } finally {
-          this.loading = false; // Reimposta lo stato di caricamento.
+        if (response.status === 201) {
+          console.log("Ordine registrato con successo:", response.data);
+        } else {
+          console.error("Errore durante la registrazione dell'ordine.");
         }
-      });
+      } catch (error) {
+        console.error("Errore nell'invio dell'ordine:", error);
+      }
     },
   },
 };
