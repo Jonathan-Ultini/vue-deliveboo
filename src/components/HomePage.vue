@@ -57,7 +57,7 @@
                 <h5 class="card-title">{{ restaurant.name }}</h5>
                 <p class="card-text">{{ restaurant.address }}</p>
                 <p class="card-text">
-                  <strong>Tipi:</strong>
+                  <strong>Type:</strong>
                   <span v-for="type in restaurant.types" :key="type.id">
                     {{ type.name }}{{ type.id === restaurant.types[restaurant.types.length - 1].id ? '' : ', ' }}
                   </span>
