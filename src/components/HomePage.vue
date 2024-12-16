@@ -42,7 +42,7 @@
         <div v-for="restaurant in restaurants" :key="restaurant.id" class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
           <router-link :to="{ name: 'restaurant-dishes', params: { id: restaurant.id } }"
             class="restaurant-card text-decoration-none">
-            <div class="card">
+            <div class="card restaurant-hover">
               <!-- Immagine del Ristorante -->
               <div class="card-cover">
                 <img v-if="restaurant.dishes && restaurant.dishes[0]"
@@ -67,6 +67,7 @@
           </router-link>
         </div>
       </div>
+
 
       <!-- Nessun risultato -->
       <div v-else-if="!loading && !error" class="row">
@@ -261,16 +262,30 @@ export default {
   text-decoration: none !important;
 }
 
+/* Stile di base della card */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Effetto hover */
+.card.restaurant-hover:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
 /* Contenitore immagine di copertina */
 .card-cover {
   height: 150px;
   overflow: hidden;
 }
 
+/* Immagine della card */
 .card-cover img {
-  object-fit: cover;
-  height: 100%;
-  width: 100%;
+  transition: transform 0.3s ease;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 /* Contenuto della card */
@@ -290,11 +305,25 @@ export default {
   color: #555;
 }
 
-/* Contenuto della card */
+/* Effetto hover sull'immagine */
+.card.restaurant-hover:hover .card-cover img {
+  transform: scale(1.05);
+}
+
+/* Corpo della card */
 .card-body {
-  padding: 10px;
-  text-align: left;
-  flex-grow: 1;
+  text-align: center;
+  padding: 15px;
+}
+
+/* Placeholder immagine */
+.placeholder-image {
+  background-color: #f4f4f4;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
 }
 
 /* Stile per il testo che non fa allargare la card */
@@ -304,14 +333,5 @@ export default {
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
-}
-
-.placeholder-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-size: 14px;
-  color: #999;
 }
 </style>
