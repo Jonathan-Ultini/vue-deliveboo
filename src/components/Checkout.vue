@@ -17,7 +17,9 @@
           <h4>Total: {{ totalCount }} €</h4>
         </div>
       </div>
-      <button class="btn btn-primary mt-4" @click="nextStep">Continue</button>
+      <button class="btn btn-primary " @click="nextStep">Continue</button>
+      <button class="btn btn-secondary m-2" @click="cancel">Cancel
+      </button>
     </div>
 
     <!-- Step 2: Informazioni Ordine -->
@@ -215,6 +217,9 @@ export default {
       } else if (this.currentStep === 2) {
         this.currentStep = 3;
       }
+    },
+    cancel() {
+      this.$router.push({ name: "Home" });
     },
     // Metodo per inviare le informazioni dell'ordine al backend.
     async submitOrderInfo() {
