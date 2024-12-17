@@ -21,7 +21,7 @@
       </div>
       <div class="cart-footer">
         <p class="total">Total: <strong>{{ totalCount }} €</strong></p>
-        <button class="checkout-btn" @click="checkout">Go to Checkout</button>
+        <button class="checkout-btn" @click="handleCheckout">Go to Checkout</button>
       </div>
     </div>
     <div v-else>
@@ -53,6 +53,10 @@ export default {
     },
   },
   methods: {
+    handleCheckout() {
+      this.checkout();
+      this.$emit('close');
+    },
     checkout() {
       const cartStore = useCartStore();
 
