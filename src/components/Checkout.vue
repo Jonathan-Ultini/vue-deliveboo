@@ -182,7 +182,7 @@ export default {
       // Controllo Email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.orderInfo.customer_email.trim()) {
-        this.errors.customer_email = 'Email is required.';
+        this.errors.customer_email = ' The email is mandatory.';
         isValid = false;
       } else if (!emailRegex.test(this.orderInfo.customer_email)) {
         this.errors.customer_email = 'Please enter a valid email.';
@@ -201,7 +201,7 @@ export default {
 
       // Controllo Indirizzo
       if (!this.orderInfo.customer_address.trim()) {
-        this.errors.customer_address = 'The address is required.';
+        this.errors.customer_address = 'The address is mandatory.';
         isValid = false;
       }
 
