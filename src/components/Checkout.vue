@@ -9,7 +9,7 @@
         <p><strong>Address:</strong> {{ cart.restaurantAddress }}</p>
         <div class="cart-items">
           <p><strong>Dishes:</strong></p>
-          <div v-for="item in cartStore.items" :key="item.id" class="cart-item">
+          <div v-for="item in cart.items" :key="item.id" class="cart-item">
             <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
           </div>
         </div>
@@ -17,7 +17,7 @@
           <h4>Total: {{ totalCount }} €</h4>
         </div>
       </div>
-      <div v-if="cartStore.items && cartStore.items.length === 0">
+      <div v-if="cart.items && cart.items.length === 0">
         <p class="text-center">Your cart is empty. Explore the menu to start ordering!</p>
         <button class="btn btn-primary" @click="cancel">Go to Homepage</button>
       </div>
@@ -60,7 +60,7 @@
         </div>
         <div class="col-md-4">
           <h4 class="my-4">Cart summary</h4>
-          <div v-for="item in cartStore.items" :key="item.id">
+          <div v-for="item in cart.items" :key="item.id">
             <p><strong>{{ item.name }}</strong> - {{ item.quantity }} x {{ item.price }} €</p>
           </div>
           <h5>Total: {{ totalCount }} €</h5>
@@ -105,8 +105,8 @@ import { useCartStore } from "@/stores/cartStore";
 
 export default {
   setup() {
-    const cartStore = useCartStore();
-    return { cartStore };
+    const cart = useCartStore();
+    return { cart };
   },
   data() {
     return {
