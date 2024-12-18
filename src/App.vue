@@ -1,47 +1,40 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <!-- Usa il CartStore per aggiornare automaticamente il conteggio -->
+    <AppHeader @toggle-cart="toggleCart" />
+    <!-- Passa il cartStore direttamente a CartSidebar -->
+    <CartSidebar v-if="showCart" @close="toggleCart" />
+    <AppFooter />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+import { useCartStore } from './stores/cartStore';
+import AppHeader from './components/AppHeader.vue';
+import AppFooter from './components/AppFooter.vue';
+import CartSidebar from './components/CartSidebar.vue';
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+export default {
+  components: {
+    AppHeader,
+    AppFooter,
+    CartSidebar,
+  },
+  setup() {
+    const cartStore = useCartStore(); // Inizializza il CartStore
+    return {
+      cartStore, // Rende il cartStore disponibile nel template
+    };
+  },
+  data() {
+    return {
+      showCart: false, // Stato locale per mostrare/nascondere il carrello
+    };
+  },
+  methods: {
+    toggleCart() {
+      this.showCart = !this.showCart;
+    },
+  },
+};
+</script>
